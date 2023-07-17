@@ -13,12 +13,11 @@ public class Agent {
      * @param instrumentation
      */
     public static void premain(String args, Instrumentation instrumentation) {
-        Context context = new Context();
 
-        StructureTransformer structureTransformer = new StructureTransformer(context);
+        StructureTransformer structureTransformer = new StructureTransformer();
         structureTransformer.premain(args, instrumentation);
 
-        LoggerTransformer feedbackTransformer = new LoggerTransformer(context);
+        LoggerTransformer feedbackTransformer = new LoggerTransformer();
         feedbackTransformer.premain(args, instrumentation);
 
     }

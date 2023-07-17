@@ -9,13 +9,11 @@ public class StructureClassVisitor extends ClassVisitor {
 
     private final String className;
     private final ClassWriter classWriter;
-    private final Context context;
 
-    public StructureClassVisitor(int api, ClassWriter classWriter, String className, Context context) {
+    public StructureClassVisitor(int api, ClassWriter classWriter, String className) {
         super(api, classWriter);
         this.className = className;
         this.classWriter = classWriter;
-        this.context = context;
     }
 
     @Override

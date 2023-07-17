@@ -1,12 +1,11 @@
 package com.github.izerui.logger;
 
+import com.github.izerui.Context;
 import net.bytebuddy.implementation.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 
 /**
@@ -47,19 +46,12 @@ public class LoggerInterceptor {
                 String className = target.getClass().getName();
                 String packageName = target.getClass().getPackageName();
                 String baseClassName = target.getClass().getSimpleName();
-                Optional<StackTraceElement> stackTrace = getStackTrace0(className);
-                if (stackTrace.isPresent()) {
-                    StackTraceElement traceElement = stackTrace.get();
-                    LOGGER.info("{}({}.java:{})#{}: ({}ms) {}", packageName, baseClassName, traceElement.getLineNumber(), method.getName(), (System.currentTimeMillis() - start), argumengts);
-                }
+                int methodLine = Context.getClassMethodLine(className, method);
+                LOGGER.info("{}({}.java:{})#{}: ({}ms) {}", packageName, baseClassName, methodLine, method.getName(), (System.currentTimeMillis() - start), argumengts);
             } catch (Exception ex) {
                 ;
             }
         }
     }
 
-    private static Optional<StackTraceElement> getStackTrace0(String className) {
-        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-        return Arrays.stream(stackTrace).filter(stackTraceElement -> stackTraceElement.getClassName().equals(className)).findFirst();
-    }
 }
