@@ -15,8 +15,8 @@ public class Agent {
     public static void premain(String args, Instrumentation instrumentation) {
         Context context = new Context();
 
-//        StructureTransformer structureTransformer = new StructureTransformer(context);
-//        structureTransformer.premain(args, instrumentation);
+        StructureTransformer structureTransformer = new StructureTransformer(context);
+        structureTransformer.premain(args, instrumentation);
 
         LoggerTransformer feedbackTransformer = new LoggerTransformer(context);
         feedbackTransformer.premain(args, instrumentation);
