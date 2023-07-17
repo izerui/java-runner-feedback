@@ -1,15 +1,9 @@
 package com.github.izerui;
 
-import net.bytebuddy.agent.builder.AgentBuilder;
-import net.bytebuddy.description.method.MethodDescription;
-import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.dynamic.DynamicType;
-import net.bytebuddy.implementation.MethodDelegation;
-import net.bytebuddy.matcher.ElementMatchers;
-import net.bytebuddy.utility.JavaModule;
+import com.github.izerui.logger.LoggerTransformer;
+import com.github.izerui.structure.StructureTransformer;
 
 import java.lang.instrument.Instrumentation;
-import java.security.ProtectionDomain;
 
 public class Agent {
     /**
@@ -19,49 +13,14 @@ public class Agent {
      * @param instrumentation
      */
     public static void premain(String args, Instrumentation instrumentation) {
-        AgentBuilder.Transformer transformer = new AgentBuilder.Transformer() {
-            @Override
-            public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader, JavaModule module, ProtectionDomain protectionDomain) {
-                return builder
-                        .method(ElementMatchers.<MethodDescription>any()) // 拦截任意方法
-                        .intercept(MethodDelegation.to(TimeInterceptor.class)); // 委托
-            }
-        };
+        Context context = new Context();
 
-        AgentBuilder.Listener listener = new AgentBuilder.Listener() {
+//        StructureTransformer structureTransformer = new StructureTransformer(context);
+//        structureTransformer.premain(args, instrumentation);
 
-            @Override
-            public void onDiscovery(String typeName, ClassLoader classLoader, JavaModule module, boolean loaded) {
+        LoggerTransformer feedbackTransformer = new LoggerTransformer(context);
+        feedbackTransformer.premain(args, instrumentation);
 
-            }
-
-            @Override
-            public void onTransformation(TypeDescription typeDescription, ClassLoader classLoader, JavaModule module, boolean loaded, DynamicType dynamicType) {
-
-            }
-
-            @Override
-            public void onIgnored(TypeDescription typeDescription, ClassLoader classLoader, JavaModule module, boolean loaded) {
-
-            }
-
-            @Override
-            public void onError(String typeName, ClassLoader classLoader, JavaModule module, boolean loaded, Throwable throwable) {
-                System.out.println("error typeName:" + typeName + ", exception:" + throwable);
-            }
-
-            @Override
-            public void onComplete(String typeName, ClassLoader classLoader, JavaModule module, boolean loaded) {
-                System.out.println("complete typeName:" + typeName);
-            }
-        };
-
-        new AgentBuilder
-                .Default()
-                .type(ElementMatchers.nameStartsWith("com.github")) // 指定需要拦截的类
-                .transform(transformer)
-                .with(listener)
-                .installOn(instrumentation);
     }
 
 }
