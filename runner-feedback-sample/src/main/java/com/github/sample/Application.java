@@ -14,10 +14,14 @@ public class Application {
             new Thread(() -> {
                 SampleController controller = new SampleController();
                 String name = controller.testPost("uid".concat(new Random().nextInt() + ""));
-                System.out.println("thread:"+Thread.currentThread().getName()+" name: " + name);
+                System.out.println("thread:" + Thread.currentThread().getName() + " name: " + name);
                 countDownLatch.countDown();
             }).start();
         });
         countDownLatch.await();
+
+//        SampleController controller = new SampleController();
+//        String name = controller.testPost("uid".concat(new Random().nextInt() + ""));
+//        System.out.println("thread:" + Thread.currentThread().getName() + " name: " + name);
     }
 }
