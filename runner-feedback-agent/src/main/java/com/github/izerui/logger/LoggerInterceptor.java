@@ -14,7 +14,7 @@ import java.util.concurrent.Callable;
  */
 public class LoggerInterceptor {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger("【Bytebuddy】");
+    private final static Logger LOGGER = LoggerFactory.getLogger("【Logger】");
 
     /**
      * 进行方法拦截, 注意这里可以对所有修饰符的修饰的方法（包含private的方法）进行拦截
@@ -47,8 +47,11 @@ public class LoggerInterceptor {
                 String className = target.getClass().getName();
                 String packageName = target.getClass().getPackageName();
                 String baseClassName = target.getClass().getSimpleName();
-                int lineNumber = Thread.currentThread().getStackTrace()[1].getLineNumber();
-                LOGGER.info("{}({}.java:{})#{}: ({}ms) {}", packageName, baseClassName, lineNumber, method.getName(), (System.currentTimeMillis() - start), argumengts);
+                Optional<StackTraceElement> stackTrace = getStackTrace0(className);
+                if (stackTrace.isPresent()) {
+                    StackTraceElement traceElement = stackTrace.get();
+                    LOGGER.info("{}({}.java:{})#{}: ({}ms) {}", packageName, baseClassName, traceElement.getLineNumber(), method.getName(), (System.currentTimeMillis() - start), argumengts);
+                }
             } catch (Exception ex) {
                 ;
             }

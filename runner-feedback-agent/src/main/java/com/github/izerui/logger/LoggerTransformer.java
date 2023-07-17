@@ -40,12 +40,6 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
     @Override
     public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader, JavaModule javaModule, ProtectionDomain protectionDomain) {
         return builder
-                .visit(new AsmVisitorWrapper.AbstractBase() {
-                    @Override
-                    public ClassVisitor wrap(TypeDescription typeDescription, ClassVisitor classVisitor, Implementation.Context context, TypePool typePool, FieldList<FieldDescription.InDefinedShape> fieldList, MethodList<?> methodList, int i, int i1) {
-                        return null;
-                    }
-                })
                 .method(ElementMatchers.<MethodDescription>any()) // 拦截任意方法
                 .intercept(MethodDelegation.to(LoggerInterceptor.class)); // 委托
     }
