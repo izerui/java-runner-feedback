@@ -6,4 +6,9 @@ public class SampleDao {
         return "hello: " + user;
 //        throw new RuntimeException("dss");
     }
+
+    public String getName2(String user) {
+        return "hello: " + user;
+//        throw new RuntimeException("dss");
+    }
 }

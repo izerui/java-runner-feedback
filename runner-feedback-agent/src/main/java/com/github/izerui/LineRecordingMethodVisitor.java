@@ -1,5 +1,6 @@
 package com.github.izerui;
 
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.slf4j.Logger;
@@ -7,17 +8,18 @@ import org.slf4j.LoggerFactory;
 
 public class LineRecordingMethodVisitor extends MethodVisitor {
 
-    private final static ThreadLocal<Integer> LOCAL_REQUEST_NO = new InheritableThreadLocal<>();
-    private static Integer INCREASE_REQUEST_NO = 0;
-
     private final Logger logger;
     private final String realClassName;
     private final String methodName;
+    private final String descriptor;
+    private final ClassWriter cw;
 
-    public LineRecordingMethodVisitor(MethodVisitor methodVisitor, String realClassName, String methodName) {
+    public LineRecordingMethodVisitor(MethodVisitor methodVisitor, ClassWriter cw, String realClassName, String methodName, String descriptor) {
         super(Opcodes.ASM9, methodVisitor);
+        this.cw = cw;
         this.realClassName = realClassName;
         this.methodName = methodName;
+        this.descriptor = descriptor;
         this.logger = LoggerFactory.getLogger("【Feedback】");
     }
 
@@ -31,23 +33,8 @@ public class LineRecordingMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitLineNumber(int line, org.objectweb.asm.Label start) {
-        logger.info("{}:{} ({}.java:{}) ({})", methodName, line, getBaseClassName(), line, getPackageName());
+        logger.info("{}({}.java:{})#{}:{}",getPackageName(),  getBaseClassName(), line, methodName, descriptor);
         super.visitLineNumber(line, start);
-    }
-
-
-    private Integer getRequestNo() {
-        Integer no = LOCAL_REQUEST_NO.get();
-        if (no == null) {
-            no = LineRecordingMethodVisitor.getAndIncreaseRequestNo();
-            LOCAL_REQUEST_NO.set(no);
-        }
-        return no;
-    }
-
-    private static synchronized Integer getAndIncreaseRequestNo() {
-        INCREASE_REQUEST_NO++;
-        return INCREASE_REQUEST_NO;
     }
 
 }

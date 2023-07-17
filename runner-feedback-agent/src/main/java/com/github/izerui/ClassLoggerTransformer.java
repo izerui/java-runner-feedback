@@ -54,7 +54,7 @@ public class ClassLoggerTransformer implements ClassFileTransformer {
                                 String[] exceptions
                         ) {
                             MethodVisitor mv = super.visitMethod(access, methodName, descriptor, signature, exceptions);
-                            return new LineRecordingMethodVisitor(mv, realClassName, methodName);
+                            return new LineRecordingMethodVisitor(mv, cw, realClassName, methodName, descriptor);
                         }
                     };
                     cr.accept(cv, ClassReader.EXPAND_FRAMES);
