@@ -2,19 +2,18 @@ package com.github.sample.service;
 
 import com.github.sample.dao.SampleDao;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 public class SampleService {
 
-    private ExecutorService service = Executors.newFixedThreadPool(10);
+    private ExecutorService service = new ThreadPoolExecutor(5, 10,
+            0L, TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue<Runnable>());
 
     public String getUserName(String user) throws ExecutionException, InterruptedException {
         Future<String> future = service.submit(() -> {
             SampleDao sampleDao = new SampleDao();
-            return sampleDao.getName(user);
+            return sampleDao.getName(user, false);
         });
         return future.get();
 

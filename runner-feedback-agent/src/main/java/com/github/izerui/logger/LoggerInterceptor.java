@@ -1,12 +1,15 @@
 package com.github.izerui.logger;
 
 import com.github.izerui.Context;
+import com.github.izerui.ansi.AnsiColor;
+import com.github.izerui.ansi.AnsiOutput;
 import com.github.izerui.structure.ClassMethodLine;
 import net.bytebuddy.implementation.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 /**
@@ -14,7 +17,7 @@ import java.util.concurrent.Callable;
  */
 public class LoggerInterceptor {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger("【Logger】");
+    private final static Logger LOGGER = LoggerFactory.getLogger("【Feedback】");
 
     /**
      * 进行方法拦截, 注意这里可以对所有修饰符的修饰的方法（包含private的方法）进行拦截
@@ -37,18 +40,28 @@ public class LoggerInterceptor {
             @SuperCall Callable<?> callable
     ) throws Exception {
         long start = System.currentTimeMillis();
+        Object result = null;
         try {
-            return callable.call();
+            result = callable.call();
+            return result;
         } catch (Exception e) {
             // 进行异常信息上报
             throw e;
         } finally {
             try {
-                String className = target.getClass().getName();
-                String packageName = target.getClass().getPackageName();
-                String baseClassName = target.getClass().getSimpleName();
-                ClassMethodLine methodLine = Context.getClassMethodLine(className, method);
-                LOGGER.info("{}({}.java:{})#{}:{} 耗时:【{}】ms 参数:{}", packageName, baseClassName, methodLine.getLine(), method.getName(), methodLine.getDescriptor(), (System.currentTimeMillis() - start), argumengts);
+                Class declaringClass = method.getDeclaringClass();
+                String declaringPackageName = declaringClass.getPackageName();
+                String declaringBaseClassName = declaringClass.getSimpleName();
+                int methodLine = Context.getClassMethodLine(method);
+                LOGGER.info("【traceId:{}】 {}({}.java:{}){} {} {} => {}",
+                        AnsiOutput.toString(AnsiColor.BRIGHT_YELLOW, Context.getTraceId()),
+                        declaringPackageName,
+                        declaringBaseClassName,
+                        methodLine,
+                        AnsiOutput.toString(AnsiColor.YELLOW, "#".concat(method.getName())),
+                        AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, (System.currentTimeMillis() - start) + "ms"),
+                        AnsiOutput.toString(AnsiColor.CYAN, argumengts),
+                        AnsiOutput.toString(AnsiColor.BRIGHT_GREEN, result));
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

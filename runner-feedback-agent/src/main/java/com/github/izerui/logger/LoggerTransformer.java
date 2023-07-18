@@ -33,7 +33,13 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
     @Override
     public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader, JavaModule javaModule, ProtectionDomain protectionDomain) {
         return builder
-                .method(ElementMatchers.any()) // 拦截任意方法
+                .method(
+                        ElementMatchers.any()
+                                .and(ElementMatchers.not(ElementMatchers.isHashCode()))
+                                .and(ElementMatchers.not(ElementMatchers.isEquals()))
+                                .and(ElementMatchers.not(ElementMatchers.isClone()))
+                                .and(ElementMatchers.not(ElementMatchers.isToString()))
+                ) // 拦截任意方法
                 .intercept(MethodDelegation.to(LoggerInterceptor.class)); // 委托
     }
 }

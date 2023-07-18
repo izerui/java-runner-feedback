@@ -2,7 +2,7 @@ package com.github.sample.dao;
 
 import java.util.List;
 
-public class SampleDao {
+public class SampleDao extends BaseDao{
 
     public boolean getBoolean() {
         return true;
@@ -31,10 +31,7 @@ public class SampleDao {
 //        throw new RuntimeException("dss");
     }
 
-    public String getName(String user, boolean isUser) {
 
-        return "hello: " + isUser + " - " + user;
-    }
 
     public String getName2(String user) {
         return "hello: " + user;

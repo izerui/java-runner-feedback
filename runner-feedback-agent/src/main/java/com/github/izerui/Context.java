@@ -1,5 +1,6 @@
 package com.github.izerui;
 
+import com.github.izerui.ansi.AnsiOutput;
 import com.github.izerui.structure.ClassMethodLine;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
@@ -11,6 +12,7 @@ import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
@@ -20,11 +22,17 @@ public final class Context {
 
     private final static String[] PACKAGES;
 
-    private final static String[] IGNORE_PACKAGES = {"com.github.izerui"};
+    private final static String[] IGNORE_PACKAGES = {
+            "com.github.izerui",
+            "org.springframework.cglib"
+    };
 
     private final static Set<ClassMethodLine> CLASS_METHOD_LINES = new CopyOnWriteArraySet<>();
 
+    private final static ThreadLocal<String> TRACE_ID = new InheritableThreadLocal<>();
+
     static {
+        AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
         String feedbackPackages = System.getProperties().getProperty("feedback.packages");
         if (feedbackPackages != null && !"".equals(feedbackPackages)) {
             PACKAGES = feedbackPackages.split(",");
@@ -64,28 +72,28 @@ public final class Context {
         CLASS_METHOD_LINES.add(new ClassMethodLine(className, methodName, descriptor, line));
     }
 
-    public static ClassMethodLine getClassMethodLine(String className, Method method) {
+    public static int getClassMethodLine(Method method) {
+        String declaringClassName = method.getDeclaringClass().getName();
         List<ClassMethodLine> methodLines = CLASS_METHOD_LINES.stream()
-                .filter(classMethodLine -> className.equals(classMethodLine.getClassName()))
+                .filter(classMethodLine -> declaringClassName.equals(classMethodLine.getClassName()))
                 .filter(classMethodLine -> method.getName().equals(classMethodLine.getMethodName()))
                 .collect(Collectors.toList());
 
         if (methodLines == null) {
-            throw new RuntimeException("未找到" + className + "的方法" + method.getName());
+            return -1;
         }
         if (methodLines.size() == 1) {
-            return methodLines.get(0);
+            return methodLines.get(0).getLine();
         } else if (methodLines.size() > 1) {
             // TODO 解析 参数类型进行匹配
             String methodDescriptor = getMethodDescriptor(method);
             for (ClassMethodLine methodLine : methodLines) {
                 if (methodDescriptor.equals(methodLine.getDescriptor())) {
-                    return methodLine;
+                    return methodLine.getLine();
                 }
             }
-            throw new RuntimeException("未找到" + className + "的重载方法: " + method + " : " + methodDescriptor);
         }
-        throw new RuntimeException("未找到" + className + "的方法" + method.getName());
+        return -1;
     }
 
     /**
@@ -167,6 +175,30 @@ public final class Context {
                 iterator.remove();
             }
         }
+    }
+
+
+    public static final String[] TRACE_CHARS = new String[]{"a", "b", "c", "d", "e", "f",
+            "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s",
+            "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5",
+            "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I",
+            "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
+            "W", "X", "Y", "Z"};
+
+    public static String getTraceId() {
+        String traceId = TRACE_ID.get();
+        if (traceId == null || "".equals(traceId)) {
+            StringBuffer shortBuffer = new StringBuffer();
+            String uuid = UUID.randomUUID().toString().replace("-", "");
+            for (int i = 0; i < 8; i++) {
+                String str = uuid.substring(i * 4, i * 4 + 4);
+                int x = Integer.parseInt(str, 16);
+                shortBuffer.append(TRACE_CHARS[x % 0x3E]);
+            }
+            traceId = shortBuffer.toString();
+            TRACE_ID.set(traceId);
+        }
+        return traceId;
     }
 
 }

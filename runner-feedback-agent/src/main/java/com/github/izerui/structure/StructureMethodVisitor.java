@@ -38,7 +38,7 @@ public class StructureMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitLineNumber(int line, org.objectweb.asm.Label start) {
-        logger.info("{}({}.java:{})#{}:{}", getPackageName(), getBaseClassName(), line, methodName, descriptor);
+//        logger.info("{}({}.java:{})#{}:{}", getPackageName(), getBaseClassName(), line, methodName, descriptor);
         Context.addMethodLine(className, methodName, descriptor, line);
         super.visitLineNumber(line, start);
     }
