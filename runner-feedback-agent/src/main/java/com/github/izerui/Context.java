@@ -35,7 +35,7 @@ public final class Context {
         if (feedbackPackages != null && !"".equals(feedbackPackages)) {
             PACKAGES = feedbackPackages.split(",");
         } else {
-            System.out.println("未获取到正确的可【feedback】的包匹配字符串, 请正确配置agent类似: -javaagent:runner-feedback-agent-jar-with-dependencies.jar -Dfeedback.packages=com.github.sample,com.yj2025");
+            System.out.println("未获取到正确的可【feedback】的包匹配字符串, 请正确配置agent类似: -javaagent:~/runner-feedback-agent.jar -Dfeedback.packages=com.github.sample,com.yj2025");
             PACKAGES = new String[0];
         }
     }
