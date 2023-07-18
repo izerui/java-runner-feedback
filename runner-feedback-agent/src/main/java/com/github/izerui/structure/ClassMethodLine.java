@@ -1,6 +1,8 @@
 package com.github.izerui.structure;
 
 
+import java.util.Objects;
+
 public class ClassMethodLine {
     private String className;
     private String methodName;
@@ -44,5 +46,30 @@ public class ClassMethodLine {
 
     public void setLine(int line) {
         this.line = line;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof ClassMethodLine)) {
+            return false;
+        }
+        ClassMethodLine ml = (ClassMethodLine) obj;
+        return Objects.equals(className, ml.className) &&
+                Objects.equals(methodName, ml.methodName) &&
+                Objects.equals(descriptor, ml.descriptor);
+    }
+
+    @Override
+    public int hashCode() {
+        if (className != null && methodName != null && descriptor != null) {
+            return className.hashCode() + methodName.hashCode() + descriptor.hashCode();
+        }
+        return super.hashCode();
     }
 }

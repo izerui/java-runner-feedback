@@ -16,7 +16,12 @@ public class SampleService {
 //            return sampleDao.getName(user);
 //        });
 //        return future.get();
+        ;
+        ;
+        ;
+        System.out.println("fff");
         SampleDao sampleDao = new SampleDao();
-        return sampleDao.getName(user);
+        sampleDao.getVoid("ff", true);
+        return "sss";
     }
 }

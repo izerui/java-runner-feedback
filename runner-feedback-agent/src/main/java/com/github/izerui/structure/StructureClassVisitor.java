@@ -14,6 +14,7 @@ public class StructureClassVisitor extends ClassVisitor {
         super(api, classWriter);
         this.className = className;
         this.classWriter = classWriter;
+        Context.clearMethodLinesByClassName(className);
     }
 
     @Override

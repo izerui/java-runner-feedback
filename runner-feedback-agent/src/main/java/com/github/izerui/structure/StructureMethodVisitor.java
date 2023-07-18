@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 修改类字节码,读取类结构缓存等
+ * @author liuyuhua
  */
 public class StructureMethodVisitor extends MethodVisitor {
 

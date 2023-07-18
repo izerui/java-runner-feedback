@@ -1,6 +1,7 @@
 package com.github.izerui.logger;
 
 import com.github.izerui.Context;
+import com.github.izerui.structure.ClassMethodLine;
 import net.bytebuddy.implementation.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,10 +47,10 @@ public class LoggerInterceptor {
                 String className = target.getClass().getName();
                 String packageName = target.getClass().getPackageName();
                 String baseClassName = target.getClass().getSimpleName();
-                int methodLine = Context.getClassMethodLine(className, method);
-                LOGGER.info("{}({}.java:{})#{}: ({}ms) {}", packageName, baseClassName, methodLine, method.getName(), (System.currentTimeMillis() - start), argumengts);
+                ClassMethodLine methodLine = Context.getClassMethodLine(className, method);
+                LOGGER.info("{}({}.java:{})#{}:{} 耗时:【{}】ms 参数:{}", packageName, baseClassName, methodLine.getLine(), method.getName(), methodLine.getDescriptor(), (System.currentTimeMillis() - start), argumengts);
             } catch (Exception ex) {
-                ;
+                ex.printStackTrace();
             }
         }
     }
