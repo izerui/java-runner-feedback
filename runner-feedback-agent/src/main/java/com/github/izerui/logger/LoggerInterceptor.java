@@ -3,25 +3,17 @@ package com.github.izerui.logger;
 import com.github.izerui.Context;
 import com.github.izerui.ansi.AnsiColor;
 import com.github.izerui.ansi.AnsiOutput;
-import com.github.izerui.structure.ClassMethodLine;
 import net.bytebuddy.implementation.bind.annotation.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 
 /**
  * 执行拦截器
  */
 public class LoggerInterceptor {
-
-//    private final static Logger LOGGER = LoggerFactory.getLogger("【Feedback】");
 
     private final static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -70,15 +62,6 @@ public class LoggerInterceptor {
                         AnsiOutput.toString(AnsiColor.YELLOW, "#".concat(method.getName())),
                         AnsiOutput.toString(AnsiColor.CYAN, argumengts),
                         AnsiOutput.toString(AnsiColor.BRIGHT_GREEN, result)));
-//                LOGGER.info("traceId:【{}】 {}({}.java:{}){} {} {} => {}",
-//                        AnsiOutput.toString(AnsiColor.BRIGHT_YELLOW, Context.getTraceId()),
-//                        declaringPackageName,
-//                        declaringBaseClassName,
-//                        methodLine,
-//                        AnsiOutput.toString(AnsiColor.YELLOW, "#".concat(method.getName())),
-//                        AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, (System.currentTimeMillis() - start) + "ms"),
-//                        AnsiOutput.toString(AnsiColor.CYAN, argumengts),
-//                        AnsiOutput.toString(AnsiColor.BRIGHT_GREEN, result));
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
