@@ -8,7 +8,9 @@ import net.bytebuddy.implementation.bind.annotation.*;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
+import java.util.function.Function;
 
 /**
  * 执行拦截器
@@ -47,17 +49,23 @@ public class LoggerInterceptor {
             throw e;
         } finally {
             try {
+                Function<String,String> originClassName = name -> {
+                    int proxySplitIndex = name.indexOf("$$");
+                    if (proxySplitIndex > -1) {
+                        return name.substring(0, name.indexOf("$$"));
+                    }
+                    return name;
+                };
+                Class targetClass = target.getClass();
                 Class declaringClass = method.getDeclaringClass();
-                String declaringPackageName = declaringClass.getPackageName();
-                String declaringBaseClassName = declaringClass.getSimpleName();
                 int methodLine = Context.getClassMethodLine(method);
                 System.out.println(String.format("%s [%s]【%s】 %s %s(%s.java:%s)%s %s => %s",
                         LocalDateTime.now().format(DATE_TIME_FORMATTER).toString(),
                         Thread.currentThread().getName(),
                         AnsiOutput.toString(AnsiColor.GREEN, Context.getTraceId()),
                         AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, (System.currentTimeMillis() - start) + "ms"),
-                        declaringPackageName,
-                        declaringBaseClassName,
+                        (!targetClass.equals(declaringClass) && methodLine == -1) ? targetClass.getPackageName(): declaringClass.getPackageName(),
+                        (!targetClass.equals(declaringClass) && methodLine == -1) ? originClassName.apply(targetClass.getSimpleName()): originClassName.apply(declaringClass.getSimpleName()),
                         methodLine,
                         AnsiOutput.toString(AnsiColor.YELLOW, "#".concat(method.getName())),
                         AnsiOutput.toString(AnsiColor.CYAN, argumengts),
