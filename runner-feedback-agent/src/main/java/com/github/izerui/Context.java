@@ -5,6 +5,7 @@ import com.github.izerui.structure.ClassMethodLine;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
+import org.objectweb.asm.Opcodes;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -15,6 +16,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 public final class Context {
+
+    public final static int ASM_VERSION = Opcodes.ASM9;
 
     private final static String[] PACKAGES;
 

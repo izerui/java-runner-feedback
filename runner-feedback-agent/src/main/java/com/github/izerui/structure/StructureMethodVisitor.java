@@ -3,7 +3,6 @@ package com.github.izerui.structure;
 import com.github.izerui.Context;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 
 /**
  * 修改类字节码,读取类结构缓存等
@@ -18,7 +17,7 @@ public class StructureMethodVisitor extends MethodVisitor {
     private final ClassWriter classWriter;
 
     public StructureMethodVisitor(MethodVisitor methodVisitor, ClassWriter classWriter, String className, String methodName, String descriptor) {
-        super(Opcodes.ASM7, methodVisitor);
+        super(Context.ASM_VERSION, methodVisitor);
         this.classWriter = classWriter;
         this.className = className;
         this.methodName = methodName;
