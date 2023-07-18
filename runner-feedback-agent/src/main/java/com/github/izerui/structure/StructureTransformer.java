@@ -35,7 +35,7 @@ public class StructureTransformer implements ClassFileTransformer, PremainAgent 
                             ProtectionDomain protectionDomain,
                             byte[] classfileBuffer) throws IllegalClassFormatException {
         try {
-            String realClassName = className.replaceAll("/", ".");
+            String realClassName = className.replace("/", ".");
             if (Context.matchPackages(realClassName)) {
                 // 只记录特定包名下的类，可根据需要修改过滤条件
                 ClassReader cr = new ClassReader(classfileBuffer);
