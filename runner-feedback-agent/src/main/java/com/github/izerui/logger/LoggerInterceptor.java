@@ -21,7 +21,7 @@ import java.util.concurrent.Callable;
  */
 public class LoggerInterceptor {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger("【Feedback】");
+//    private final static Logger LOGGER = LoggerFactory.getLogger("【Feedback】");
 
     private final static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -59,15 +59,15 @@ public class LoggerInterceptor {
                 String declaringPackageName = declaringClass.getPackageName();
                 String declaringBaseClassName = declaringClass.getSimpleName();
                 int methodLine = Context.getClassMethodLine(method);
-                System.out.println(String.format("%s [%s]【%s】 %s(%s.java:%s)%s %s %s => %s",
+                System.out.println(String.format("%s [%s]【%s】 %s %s(%s.java:%s)%s %s => %s",
                         LocalDateTime.now().format(DATE_TIME_FORMATTER).toString(),
                         Thread.currentThread().getName(),
                         AnsiOutput.toString(AnsiColor.MAGENTA, Context.getTraceId()),
+                        AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, (System.currentTimeMillis() - start) + "ms"),
                         declaringPackageName,
                         declaringBaseClassName,
                         methodLine,
                         AnsiOutput.toString(AnsiColor.YELLOW, "#".concat(method.getName())),
-                        AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, (System.currentTimeMillis() - start) + "ms"),
                         AnsiOutput.toString(AnsiColor.CYAN, argumengts),
                         AnsiOutput.toString(AnsiColor.BRIGHT_GREEN, result)));
 //                LOGGER.info("traceId:【{}】 {}({}.java:{}){} {} {} => {}",
