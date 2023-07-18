@@ -9,6 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
@@ -18,6 +22,8 @@ import java.util.concurrent.Callable;
 public class LoggerInterceptor {
 
     private final static Logger LOGGER = LoggerFactory.getLogger("【Feedback】");
+
+    private final static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     /**
      * 进行方法拦截, 注意这里可以对所有修饰符的修饰的方法（包含private的方法）进行拦截
@@ -53,8 +59,10 @@ public class LoggerInterceptor {
                 String declaringPackageName = declaringClass.getPackageName();
                 String declaringBaseClassName = declaringClass.getSimpleName();
                 int methodLine = Context.getClassMethodLine(method);
-                System.out.println(String.format("traceId:【%s】 %s(%s.java:%s)%s %s %s => %s",
-                        AnsiOutput.toString(AnsiColor.BRIGHT_YELLOW, Context.getTraceId()),
+                System.out.println(String.format("%s [%s]【%s】 %s(%s.java:%s)%s %s %s => %s",
+                        LocalDateTime.now().format(DATE_TIME_FORMATTER).toString(),
+                        Thread.currentThread().getName(),
+                        AnsiOutput.toString(AnsiColor.MAGENTA, Context.getTraceId()),
                         declaringPackageName,
                         declaringBaseClassName,
                         methodLine,
