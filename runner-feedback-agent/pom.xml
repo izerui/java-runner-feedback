@@ -51,13 +51,14 @@
     </dependencies>
 
     <build>
-        <finalName>runner-feedback-agent</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.6.0</version>
                 <configuration>
+                    <finalName>runner-feedback-agent</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
                     <descriptorRefs>
                         <!--给jar包起的别名-->
                         <descriptorRef>jar-with-dependencies</descriptorRef>
