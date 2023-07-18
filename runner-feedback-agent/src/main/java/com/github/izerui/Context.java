@@ -60,11 +60,15 @@ public final class Context {
         for (String ignorePackage : IGNORE_PACKAGES) {
             matcher = matcher.and(ElementMatchers.not(ElementMatchers.nameStartsWith(ignorePackage)));
         }
+//        matcher = matcher.and(ElementMatchers.not(ElementMatchers.nameContainsIgnoreCase("Configuration")));
+//        matcher = matcher.and(ElementMatchers.not(ElementMatchers.nameContainsIgnoreCase("Client")));
+        matcher = matcher.and(ElementMatchers.not(ElementMatchers.isInterface()));
         ElementMatcher.Junction<? super TypeDescription> orMatcher = ElementMatchers.none();
         for (String aPackage : PACKAGES) {
             orMatcher = orMatcher.or(ElementMatchers.nameStartsWith(aPackage));
         }
-        return matcher.and(orMatcher);
+        matcher = matcher.and(orMatcher);
+        return matcher;
     }
 
     public static void addMethodLine(String className, String methodName, String descriptor, int line) {
