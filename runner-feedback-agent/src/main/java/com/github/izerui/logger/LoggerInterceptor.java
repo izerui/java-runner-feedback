@@ -62,7 +62,7 @@ public class LoggerInterceptor {
                 System.out.println(String.format("%s [%s]【%s】 %s %s(%s.java:%s)%s %s => %s",
                         LocalDateTime.now().format(DATE_TIME_FORMATTER).toString(),
                         Thread.currentThread().getName(),
-                        AnsiOutput.toString(AnsiColor.MAGENTA, Context.getTraceId()),
+                        AnsiOutput.toString(AnsiColor.GREEN, Context.getTraceId()),
                         AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, (System.currentTimeMillis() - start) + "ms"),
                         declaringPackageName,
                         declaringBaseClassName,
