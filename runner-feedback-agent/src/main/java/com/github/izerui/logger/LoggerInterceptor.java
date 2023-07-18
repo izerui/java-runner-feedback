@@ -53,7 +53,7 @@ public class LoggerInterceptor {
                 String declaringPackageName = declaringClass.getPackageName();
                 String declaringBaseClassName = declaringClass.getSimpleName();
                 int methodLine = Context.getClassMethodLine(method);
-                LOGGER.info("【traceId:{}】 {}({}.java:{}){} {} {} => {}",
+                System.out.println(String.format("traceId:【%s】 %s(%s.java:%s)%s %s %s => %s",
                         AnsiOutput.toString(AnsiColor.BRIGHT_YELLOW, Context.getTraceId()),
                         declaringPackageName,
                         declaringBaseClassName,
@@ -61,7 +61,16 @@ public class LoggerInterceptor {
                         AnsiOutput.toString(AnsiColor.YELLOW, "#".concat(method.getName())),
                         AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, (System.currentTimeMillis() - start) + "ms"),
                         AnsiOutput.toString(AnsiColor.CYAN, argumengts),
-                        AnsiOutput.toString(AnsiColor.BRIGHT_GREEN, result));
+                        AnsiOutput.toString(AnsiColor.BRIGHT_GREEN, result)));
+//                LOGGER.info("traceId:【{}】 {}({}.java:{}){} {} {} => {}",
+//                        AnsiOutput.toString(AnsiColor.BRIGHT_YELLOW, Context.getTraceId()),
+//                        declaringPackageName,
+//                        declaringBaseClassName,
+//                        methodLine,
+//                        AnsiOutput.toString(AnsiColor.YELLOW, "#".concat(method.getName())),
+//                        AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, (System.currentTimeMillis() - start) + "ms"),
+//                        AnsiOutput.toString(AnsiColor.CYAN, argumengts),
+//                        AnsiOutput.toString(AnsiColor.BRIGHT_GREEN, result));
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
