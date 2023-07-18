@@ -18,7 +18,7 @@ public class StructureMethodVisitor extends MethodVisitor {
     private final ClassWriter classWriter;
 
     public StructureMethodVisitor(MethodVisitor methodVisitor, ClassWriter classWriter, String className, String methodName, String descriptor) {
-        super(Opcodes.ASM9, methodVisitor);
+        super(Opcodes.ASM7, methodVisitor);
         this.classWriter = classWriter;
         this.className = className;
         this.methodName = methodName;
