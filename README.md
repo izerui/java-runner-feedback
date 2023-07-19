@@ -32,8 +32,13 @@ java vm options添加:
 
 
 todo:
+1. 解析调用堆栈，将方法调用记录起来并且连接成树状结构
+2. 将所有日志统一放到一个地方，一起以树状输出
 https://www.google.com.hk/search?q=java+Thread+StackTrace+parent&newwindow=1&hl=zh-CN&biw=1440&bih=721&ei=QRW4ZPXIAsWlhwPw2ITwDQ&ved=0ahUKEwi17b6SnpuAAxXF0mEKHXAsAd44HhDh1QMIDw&uact=5&oq=java+Thread+StackTrace+parent&gs_lp=Egxnd3Mtd2l6LXNlcnAiHWphdmEgVGhyZWFkIFN0YWNrVHJhY2UgcGFyZW50MgUQIRigATIFECEYoAFI0OEBUKoKWKXgAXAEeAGQAQGYAdMHoAGvK6oBDDAuMTEuNS4xLjYtM7gBA8gBAPgBAfgBAsICChAAGEcY1gQYsAPCAgcQABiKBRhDwgIFEAAYgATCAgcQABgNGIAEwgIEEAAYHsICBhAAGAgYHuIDBBgAIEGIBgGQBgE&sclient=gws-wiz-serp
 https://www.baeldung.com/java-name-of-executing-method
 https://www.baeldung.com/java-9-stackwalking-api
 
 https://www.freebuf.com/sectool/279742.html
+
+apm:
+https://newrelic.com/
