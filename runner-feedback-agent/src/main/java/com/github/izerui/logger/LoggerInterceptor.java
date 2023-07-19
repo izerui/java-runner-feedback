@@ -9,7 +9,9 @@ import net.bytebuddy.implementation.bind.annotation.*;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 /**
  * 执行拦截器
@@ -49,6 +51,9 @@ public class LoggerInterceptor {
             throw e;
         } finally {
             try {
+                List<StackWalker.StackFrame> frames = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(stackFrameStream -> {
+                    return stackFrameStream.collect(Collectors.toList());
+                });
                 Class targetClass = target.getClass();
                 Class declaringClass = method.getDeclaringClass();
                 int methodLine = Context.getClassMethodLine(method);
