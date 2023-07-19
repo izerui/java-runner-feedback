@@ -10,7 +10,6 @@ import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.Callable;
-import java.util.function.Function;
 
 /**
  * 执行拦截器
@@ -50,34 +49,31 @@ public class LoggerInterceptor {
             throw e;
         } finally {
             try {
-                String traceNameId = Context.Trace.getTraceNameId();
-                if (traceNameId != null) {
-                    Class targetClass = target.getClass();
-                    Class declaringClass = method.getDeclaringClass();
-                    int methodLine = Context.getClassMethodLine(method);
-                    if (methodLine != -1 || Context.DEEP_SHOW) {
-                        System.out.println(String.format("%s [%s]【%s】 %s  %s(%s.java:%s)#%s %s => %s",
-                                // 时间
-                                LocalDateTime.now().format(DATE_TIME_FORMATTER).toString(),
-                                // 线程名
-                                Thread.currentThread().getName(),
-                                // traceId
-                                AnsiOutput.toString(AnsiColor.GREEN, Context.Trace.getTraceNameId()),
-                                // 耗时
-                                AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, (System.currentTimeMillis() - start) + "ms"),
-                                // 包名
-                                (!targetClass.equals(declaringClass) && methodLine == -1) ? targetClass.getPackageName() : declaringClass.getPackageName(),
-                                // 类名
-                                (!targetClass.equals(declaringClass) && methodLine == -1) ? getOriginClassName(targetClass.getSimpleName()) : getOriginClassName(declaringClass.getSimpleName()),
-                                // 行号
-                                methodLine,
-                                // 方法
-                                AnsiOutput.toString(AnsiColor.YELLOW, method.getName()),
-                                // 入参
-                                AnsiOutput.toString(AnsiColor.CYAN, argumengts),
-                                // 返回值
-                                AnsiOutput.toString(AnsiColor.BRIGHT_GREEN, result)));
-                    }
+                Class targetClass = target.getClass();
+                Class declaringClass = method.getDeclaringClass();
+                int methodLine = Context.getClassMethodLine(method);
+                if (methodLine != -1 || Context.DEEP_SHOW) {
+                    System.out.println(String.format("%s [%s]【%s】 %s  %s(%s.java:%s)#%s %s => %s",
+                            // 时间
+                            LocalDateTime.now().format(DATE_TIME_FORMATTER).toString(),
+                            // 线程名
+                            Thread.currentThread().getName(),
+                            // traceId
+                            AnsiOutput.toString(AnsiColor.GREEN, Context.Trace.getTraceNameId()),
+                            // 耗时
+                            AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, (System.currentTimeMillis() - start) + "ms"),
+                            // 包名
+                            (!targetClass.equals(declaringClass) && methodLine == -1) ? targetClass.getPackageName() : declaringClass.getPackageName(),
+                            // 类名
+                            (!targetClass.equals(declaringClass) && methodLine == -1) ? getOriginClassName(targetClass.getSimpleName()) : getOriginClassName(declaringClass.getSimpleName()),
+                            // 行号
+                            methodLine,
+                            // 方法
+                            AnsiOutput.toString(AnsiColor.YELLOW, method.getName()),
+                            // 入参
+                            AnsiOutput.toString(AnsiColor.CYAN, argumengts),
+                            // 返回值
+                            AnsiOutput.toString(AnsiColor.BRIGHT_GREEN, result)));
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

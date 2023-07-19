@@ -17,7 +17,7 @@ public final class Context {
     /**
      * 是否输出非扫描路径的类的调用日志
      */
-    public final static boolean DEEP_SHOW;
+    public static boolean DEEP_SHOW = true;
 
     /**
      * 扫描记录包含的包名下的类
@@ -53,7 +53,10 @@ public final class Context {
             System.out.println("未获取到正确的可【feedback】的包匹配字符串, 请正确配置agent类似: -javaagent:~/runner-feedback-agent.jar -Dfeedback.packages=com.github.sample,com.yj2025");
             PACKAGES = new String[0];
         }
-        DEEP_SHOW = Boolean.valueOf(String.valueOf(properties.get("feedback.deepshow")));
+        Object deepshow = properties.get("feedback.deepshow");
+        if (deepshow != null) {
+            DEEP_SHOW = Boolean.valueOf(String.valueOf(properties.get("feedback.deepshow")));
+        }
     }
 
     public static boolean matchPackages(String className) {
@@ -185,10 +188,7 @@ public final class Context {
                 "W", "X", "Y", "Z"};
 
         public static String getTraceNameId() {
-            if (TRACE_NAME.get() == null || TRACE_ID.get() == null) {
-                return null;
-            }
-            return TRACE_NAME.get().concat("-").concat(TRACE_ID.get());
+            return TRACE_NAME.get() + "-" + getTraceId();
         }
 
         /**
@@ -207,10 +207,10 @@ public final class Context {
                 TRACE_NAME.set(feedback.value());
             }
             // 在记录traceName的前提下，生成traceId
-            getFillTraceId();
+            getTraceId();
         }
 
-        public static String getFillTraceId() {
+        public static String getTraceId() {
             String traceId = TRACE_ID.get();
             if (traceId == null) {
                 StringBuffer shortBuffer = new StringBuffer();

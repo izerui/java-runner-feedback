@@ -36,6 +36,7 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
         for (String ignorePackage : Context.IGNORE_PACKAGES) {
             matcher = matcher.and(ElementMatchers.not(ElementMatchers.nameStartsWith(ignorePackage)));
         }
+        matcher = matcher.and(ElementMatchers.not(ElementMatchers.isInterface()));
         matcher = withOutAnnotation(matcher, Context.IGNORE_ANNOTATIONS);
         ElementMatcher.Junction<? super TypeDescription> orMatcher = ElementMatchers.none();
         for (String aPackage : Context.PACKAGES) {
