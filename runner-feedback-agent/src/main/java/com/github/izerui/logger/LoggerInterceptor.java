@@ -1,6 +1,7 @@
 package com.github.izerui.logger;
 
 import com.github.izerui.Context;
+import com.github.izerui.annotation.Feedback;
 import com.github.izerui.ansi.AnsiColor;
 import com.github.izerui.ansi.AnsiOutput;
 import net.bytebuddy.implementation.bind.annotation.*;
@@ -8,7 +9,6 @@ import net.bytebuddy.implementation.bind.annotation.*;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 
@@ -42,6 +42,7 @@ public class LoggerInterceptor {
         long start = System.currentTimeMillis();
         Object result = null;
         try {
+            Context.Trace.generateIfNone(method.getAnnotation(Feedback.class));
             result = callable.call();
             return result;
         } catch (Exception e) {
@@ -49,27 +50,33 @@ public class LoggerInterceptor {
             throw e;
         } finally {
             try {
-                Function<String,String> originClassName = name -> {
-                    int proxySplitIndex = name.indexOf("$$");
-                    if (proxySplitIndex > -1) {
-                        return name.substring(0, name.indexOf("$$"));
+                String traceNameId = Context.Trace.getTraceNameId();
+                if (traceNameId != null) {
+                    Function<String, String> originClassName = name -> {
+                        int proxySplitIndex = name.indexOf("$$");
+                        if (proxySplitIndex > -1) {
+                            return name.substring(0, name.indexOf("$$"));
+                        }
+                        return name;
+                    };
+
+                    Class targetClass = target.getClass();
+                    Class declaringClass = method.getDeclaringClass();
+                    int methodLine = Context.getClassMethodLine(method);
+                    if (methodLine != -1 || Context.DEEP_SHOW) {
+                        System.out.println(String.format("%s [%s]【%s】 %s %s(%s.java:%s)%s %s => %s",
+                                LocalDateTime.now().format(DATE_TIME_FORMATTER).toString(),
+                                Thread.currentThread().getName(),
+                                AnsiOutput.toString(AnsiColor.GREEN, Context.Trace.getTraceNameId()),
+                                AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, (System.currentTimeMillis() - start) + "ms"),
+                                (!targetClass.equals(declaringClass) && methodLine == -1) ? targetClass.getPackageName() : declaringClass.getPackageName(),
+                                (!targetClass.equals(declaringClass) && methodLine == -1) ? originClassName.apply(targetClass.getSimpleName()) : originClassName.apply(declaringClass.getSimpleName()),
+                                methodLine,
+                                AnsiOutput.toString(AnsiColor.YELLOW, "#".concat(method.getName())),
+                                AnsiOutput.toString(AnsiColor.CYAN, argumengts),
+                                AnsiOutput.toString(AnsiColor.BRIGHT_GREEN, result)));
                     }
-                    return name;
-                };
-                Class targetClass = target.getClass();
-                Class declaringClass = method.getDeclaringClass();
-                int methodLine = Context.getClassMethodLine(method);
-                System.out.println(String.format("%s [%s]【%s】 %s %s(%s.java:%s)%s %s => %s",
-                        LocalDateTime.now().format(DATE_TIME_FORMATTER).toString(),
-                        Thread.currentThread().getName(),
-                        AnsiOutput.toString(AnsiColor.GREEN, Context.getTraceId()),
-                        AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, (System.currentTimeMillis() - start) + "ms"),
-                        (!targetClass.equals(declaringClass) && methodLine == -1) ? targetClass.getPackageName(): declaringClass.getPackageName(),
-                        (!targetClass.equals(declaringClass) && methodLine == -1) ? originClassName.apply(targetClass.getSimpleName()): originClassName.apply(declaringClass.getSimpleName()),
-                        methodLine,
-                        AnsiOutput.toString(AnsiColor.YELLOW, "#".concat(method.getName())),
-                        AnsiOutput.toString(AnsiColor.CYAN, argumengts),
-                        AnsiOutput.toString(AnsiColor.BRIGHT_GREEN, result)));
+                }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

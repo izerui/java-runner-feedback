@@ -1,44 +1,56 @@
 package com.github.izerui;
 
+import com.github.izerui.annotation.Feedback;
 import com.github.izerui.ansi.AnsiOutput;
-import com.github.izerui.structure.ClassMethodLine;
-import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatchers;
 import org.objectweb.asm.Opcodes;
 
 import java.lang.reflect.Method;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.stream.Collectors;
 
 public final class Context {
 
     public final static int ASM_VERSION = Opcodes.ASM9;
 
-    private final static String[] PACKAGES;
+    /**
+     * 是否输出非扫描路径的类的调用日志
+     */
+    public final static boolean DEEP_SHOW;
 
-    private final static String[] IGNORE_PACKAGES = {
+    /**
+     * 扫描记录包含的包名下的类
+     */
+    public final static String[] PACKAGES;
+
+    /**
+     * 忽略指定包名下的类
+     */
+    public final static String[] IGNORE_PACKAGES = {
             "com.github.izerui",
             "org.springframework.cglib"
     };
 
-    private final static Set<ClassMethodLine> CLASS_METHOD_LINES = new CopyOnWriteArraySet<>();
-
-    private final static ThreadLocal<String> TRACE_ID = new InheritableThreadLocal<>();
+    /**
+     * k:className
+     * v: methodName__descriptor: line
+     * k: methodName__descriptor
+     * v: line
+     */
+    private final static Map<String, Map<String, Integer>> CLASS_METHOD_LINES_MAP = new HashMap<>();
 
     static {
         AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
-        String feedbackPackages = System.getProperties().getProperty("feedback.packages");
+        Properties properties = System.getProperties();
+        String feedbackPackages = properties.getProperty("feedback.packages");
         if (feedbackPackages != null && !"".equals(feedbackPackages)) {
             PACKAGES = feedbackPackages.split(",");
         } else {
             System.out.println("未获取到正确的可【feedback】的包匹配字符串, 请正确配置agent类似: -javaagent:~/runner-feedback-agent.jar -Dfeedback.packages=com.github.sample,com.yj2025");
             PACKAGES = new String[0];
         }
+        DEEP_SHOW = Boolean.valueOf(String.valueOf(properties.get("feedback.deepshow")));
     }
 
     public static boolean matchPackages(String className) {
@@ -55,48 +67,34 @@ public final class Context {
         return false;
     }
 
-    public static ElementMatcher<? super TypeDescription> getTypeMatcher() {
-        ElementMatcher.Junction<? super TypeDescription> matcher = ElementMatchers.any();
-        for (String ignorePackage : IGNORE_PACKAGES) {
-            matcher = matcher.and(ElementMatchers.not(ElementMatchers.nameStartsWith(ignorePackage)));
-        }
-//        matcher = matcher.and(ElementMatchers.not(ElementMatchers.nameContainsIgnoreCase("Configuration")));
-//        matcher = matcher.and(ElementMatchers.not(ElementMatchers.nameContainsIgnoreCase("Client")));
-        matcher = matcher.and(ElementMatchers.not(ElementMatchers.isInterface()));
-        ElementMatcher.Junction<? super TypeDescription> orMatcher = ElementMatchers.none();
-        for (String aPackage : PACKAGES) {
-            orMatcher = orMatcher.or(ElementMatchers.nameStartsWith(aPackage));
-        }
-        matcher = matcher.and(orMatcher);
-        return matcher;
+    public synchronized static void clearMethodLinesByClassName(String className) {
+        CLASS_METHOD_LINES_MAP.remove(className);
     }
 
-    public static void addMethodLine(String className, String methodName, String descriptor, int line) {
-        CLASS_METHOD_LINES.add(new ClassMethodLine(className, methodName, descriptor, line));
+    public synchronized static void addMethodLine(String className, String methodName, String descriptor, int line) {
+        if (!CLASS_METHOD_LINES_MAP.containsKey(className)) {
+            CLASS_METHOD_LINES_MAP.put(className, new HashMap<>());
+        }
+        Map<String, Integer> lineMap = CLASS_METHOD_LINES_MAP.get(className);
+        String _key = methodName.concat(descriptor);
+        if (!lineMap.containsKey(_key)) {
+            lineMap.put(_key, line);
+        }
     }
 
     public static int getClassMethodLine(Method method) {
         String declaringClassName = method.getDeclaringClass().getName();
-        List<ClassMethodLine> methodLines = CLASS_METHOD_LINES.stream()
-                .filter(classMethodLine -> declaringClassName.equals(classMethodLine.getClassName()))
-                .filter(classMethodLine -> method.getName().equals(classMethodLine.getMethodName()))
-                .collect(Collectors.toList());
-
-        if (methodLines == null) {
+        if (!CLASS_METHOD_LINES_MAP.containsKey(declaringClassName)) {
+            CLASS_METHOD_LINES_MAP.put(declaringClassName, new HashMap<>());
+        }
+        Map<String, Integer> lineMap = CLASS_METHOD_LINES_MAP.get(declaringClassName);
+        String methodDescriptor = getMethodDescriptor(method);
+        String _key = method.getName().concat(methodDescriptor);
+        Integer line = lineMap.get(_key);
+        if (line == null) {
             return -1;
         }
-        if (methodLines.size() == 1) {
-            return methodLines.get(0).getLine();
-        } else if (methodLines.size() > 1) {
-            // TODO 解析 参数类型进行匹配
-            String methodDescriptor = getMethodDescriptor(method);
-            for (ClassMethodLine methodLine : methodLines) {
-                if (methodDescriptor.equals(methodLine.getDescriptor())) {
-                    return methodLine.getLine();
-                }
-            }
-        }
-        return -1;
+        return line;
     }
 
     /**
@@ -170,38 +168,65 @@ public final class Context {
         return "";
     }
 
-    public static void clearMethodLinesByClassName(String className) {
-        Iterator<ClassMethodLine> iterator = CLASS_METHOD_LINES.iterator();
-        while (iterator.hasNext()) {
-            ClassMethodLine next = iterator.next();
-            if (next.getClassName().equals(className)) {
-                iterator.remove();
+
+    public final static class Trace {
+
+        private final static ThreadLocal<String> TRACE_ID = new InheritableThreadLocal<>();
+        private final static ThreadLocal<String> TRACE_NAME = new InheritableThreadLocal<>();
+
+        public static final String[] TRACE_CHARS = new String[]{"a", "b", "c", "d", "e", "f",
+                "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s",
+                "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5",
+                "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I",
+                "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
+                "W", "X", "Y", "Z"};
+
+        public static String getTraceNameId() {
+            if (TRACE_NAME.get() == null || TRACE_ID.get() == null) {
+                return null;
             }
+            return TRACE_NAME.get().concat("-").concat(TRACE_ID.get());
         }
-    }
 
-
-    public static final String[] TRACE_CHARS = new String[]{"a", "b", "c", "d", "e", "f",
-            "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s",
-            "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5",
-            "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I",
-            "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
-            "W", "X", "Y", "Z"};
-
-    public static String getTraceId() {
-        String traceId = TRACE_ID.get();
-        if (traceId == null || "".equals(traceId)) {
-            StringBuffer shortBuffer = new StringBuffer();
-            String uuid = UUID.randomUUID().toString().replace("-", "");
-            for (int i = 0; i < 8; i++) {
-                String str = uuid.substring(i * 4, i * 4 + 4);
-                int x = Integer.parseInt(str, 16);
-                shortBuffer.append(TRACE_CHARS[x % 0x3E]);
+        /**
+         * 根据传入的注解来生成traceId， 如果传入的是空则不生成。
+         *
+         * @param feedback
+         */
+        public static void generateIfNone(Feedback feedback) {
+            // 未声明@Feedback的方法不生成 name和id
+            if (feedback == null) {
+                return;
             }
-            traceId = shortBuffer.toString();
-            TRACE_ID.set(traceId);
+            // 记录traceName
+            String traceName = TRACE_NAME.get();
+            if (traceName == null) {
+                TRACE_NAME.set(feedback.value());
+            }
+            // 在记录traceName的前提下，生成traceId
+            getFillTraceId();
         }
-        return traceId;
+
+        public static String getFillTraceId() {
+            String traceId = TRACE_ID.get();
+            if (traceId == null) {
+                StringBuffer shortBuffer = new StringBuffer();
+                String uuid = UUID.randomUUID().toString().replace("-", "");
+                for (int i = 0; i < 8; i++) {
+                    String str = uuid.substring(i * 4, i * 4 + 4);
+                    int x = Integer.parseInt(str, 16);
+                    shortBuffer.append(TRACE_CHARS[x % 0x3E]);
+                }
+                traceId = shortBuffer.toString();
+                TRACE_ID.set(traceId);
+            }
+            return traceId;
+        }
+
+        public static void clear() {
+            TRACE_ID.remove();
+            TRACE_NAME.remove();
+        }
     }
 
 }

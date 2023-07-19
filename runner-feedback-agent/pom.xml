@@ -38,6 +38,11 @@
             <artifactId>byte-buddy-agent</artifactId>
             <version>1.14.5</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.izerui</groupId>
+            <artifactId>runner-feedback-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

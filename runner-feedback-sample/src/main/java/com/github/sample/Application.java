@@ -1,13 +1,16 @@
 package com.github.sample;
 
 import com.github.sample.controller.SampleController;
+import com.github.sample.service.SampleService;
 
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.IntStream;
 
 public class Application {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
+        new SampleService().getUserName("232");
         int forNum = 100;
         CountDownLatch countDownLatch = new CountDownLatch(forNum);
         IntStream.range(0, forNum).forEach(value -> {
