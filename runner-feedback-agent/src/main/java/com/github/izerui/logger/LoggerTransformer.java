@@ -10,11 +10,10 @@ import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.JavaModule;
 
+import java.lang.annotation.Annotation;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.security.ProtectionDomain;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class LoggerTransformer implements ClassFileTransformer, PremainAgent, AgentBuilder.Transformer {
 
@@ -23,25 +22,41 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
 
     @Override
     public void premain(String args, Instrumentation instrumentation) {
-        Supplier<ElementMatcher<? super TypeDescription>> typeMatcherConsumer = () -> {
-            ElementMatcher.Junction<? super TypeDescription> matcher = ElementMatchers.any();
-            for (String ignorePackage : Context.IGNORE_PACKAGES) {
-                matcher = matcher.and(ElementMatchers.not(ElementMatchers.nameStartsWith(ignorePackage)));
-            }
-            matcher = matcher.and(ElementMatchers.not(ElementMatchers.isInterface()));
-            ElementMatcher.Junction<? super TypeDescription> orMatcher = ElementMatchers.none();
-            for (String aPackage : Context.PACKAGES) {
-                orMatcher = orMatcher.or(ElementMatchers.nameStartsWith(aPackage));
-            }
-            matcher = matcher.and(orMatcher);
-            return matcher;
-        };
         new AgentBuilder
                 .Default()
 //                .with(AgentBuilder.Listener.StreamWriting.toSystemOut())
-                .type(typeMatcherConsumer.get()) // 指定需要拦截的类
+                .type(getTypeMatcher()) // 指定需要拦截的类
                 .transform(this)
                 .installOn(instrumentation);
+    }
+
+
+    private ElementMatcher<? super TypeDescription> getTypeMatcher() {
+        ElementMatcher.Junction<? super TypeDescription> matcher = ElementMatchers.any();
+        for (String ignorePackage : Context.IGNORE_PACKAGES) {
+            matcher = matcher.and(ElementMatchers.not(ElementMatchers.nameStartsWith(ignorePackage)));
+        }
+        matcher = withOutAnnotation(matcher, Context.IGNORE_ANNOTATIONS);
+        ElementMatcher.Junction<? super TypeDescription> orMatcher = ElementMatchers.none();
+        for (String aPackage : Context.PACKAGES) {
+            orMatcher = orMatcher.or(ElementMatchers.nameStartsWith(aPackage));
+        }
+        matcher = matcher.and(orMatcher);
+        return matcher;
+    }
+
+    private ElementMatcher.Junction<? super TypeDescription> withOutAnnotation(ElementMatcher.Junction<? super TypeDescription> matcher, String... annotationClassNames) {
+        if (annotationClassNames != null) {
+            for (String annotationClassName : annotationClassNames) {
+                try{
+                    Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) Class.forName(annotationClassName);
+                    matcher = matcher.and(ElementMatchers.not(ElementMatchers.hasAnnotation(ElementMatchers.annotationType(annotationClass))));
+                }catch (Exception ex) {
+                    ;
+                }
+            }
+        }
+        return matcher;
     }
 
 

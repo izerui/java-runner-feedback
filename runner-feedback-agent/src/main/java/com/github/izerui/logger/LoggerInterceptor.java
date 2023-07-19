@@ -52,28 +52,30 @@ public class LoggerInterceptor {
             try {
                 String traceNameId = Context.Trace.getTraceNameId();
                 if (traceNameId != null) {
-                    Function<String, String> originClassName = name -> {
-                        int proxySplitIndex = name.indexOf("$$");
-                        if (proxySplitIndex > -1) {
-                            return name.substring(0, name.indexOf("$$"));
-                        }
-                        return name;
-                    };
-
                     Class targetClass = target.getClass();
                     Class declaringClass = method.getDeclaringClass();
                     int methodLine = Context.getClassMethodLine(method);
                     if (methodLine != -1 || Context.DEEP_SHOW) {
-                        System.out.println(String.format("%s [%s]【%s】 %s %s(%s.java:%s)%s %s => %s",
+                        System.out.println(String.format("%s [%s]【%s】 %s  %s(%s.java:%s)#%s %s => %s",
+                                // 时间
                                 LocalDateTime.now().format(DATE_TIME_FORMATTER).toString(),
+                                // 线程名
                                 Thread.currentThread().getName(),
+                                // traceId
                                 AnsiOutput.toString(AnsiColor.GREEN, Context.Trace.getTraceNameId()),
+                                // 耗时
                                 AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, (System.currentTimeMillis() - start) + "ms"),
+                                // 包名
                                 (!targetClass.equals(declaringClass) && methodLine == -1) ? targetClass.getPackageName() : declaringClass.getPackageName(),
-                                (!targetClass.equals(declaringClass) && methodLine == -1) ? originClassName.apply(targetClass.getSimpleName()) : originClassName.apply(declaringClass.getSimpleName()),
+                                // 类名
+                                (!targetClass.equals(declaringClass) && methodLine == -1) ? getOriginClassName(targetClass.getSimpleName()) : getOriginClassName(declaringClass.getSimpleName()),
+                                // 行号
                                 methodLine,
-                                AnsiOutput.toString(AnsiColor.YELLOW, "#".concat(method.getName())),
+                                // 方法
+                                AnsiOutput.toString(AnsiColor.YELLOW, method.getName()),
+                                // 入参
                                 AnsiOutput.toString(AnsiColor.CYAN, argumengts),
+                                // 返回值
                                 AnsiOutput.toString(AnsiColor.BRIGHT_GREEN, result)));
                     }
                 }
@@ -81,6 +83,15 @@ public class LoggerInterceptor {
                 ex.printStackTrace();
             }
         }
+    }
+
+    @IgnoreForBinding
+    private static String getOriginClassName(String proxyClassName) {
+        int proxySplitIndex = proxyClassName.indexOf("$$");
+        if (proxySplitIndex > -1) {
+            return proxyClassName.substring(0, proxyClassName.indexOf("$$"));
+        }
+        return proxyClassName;
     }
 
 }

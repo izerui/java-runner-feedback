@@ -28,8 +28,11 @@ public final class Context {
      * 忽略指定包名下的类
      */
     public final static String[] IGNORE_PACKAGES = {
-            "com.github.izerui",
-            "org.springframework.cglib"
+            "com.github.izerui"
+    };
+
+    public final static String[] IGNORE_ANNOTATIONS = {
+            "org.springframework.cloud.openfeign.FeignClient"
     };
 
     /**

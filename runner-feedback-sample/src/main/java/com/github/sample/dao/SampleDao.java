@@ -1,7 +1,11 @@
 package com.github.sample.dao;
 
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 
+@Component
 public class SampleDao extends BaseDao{
 
     public boolean getBoolean() {

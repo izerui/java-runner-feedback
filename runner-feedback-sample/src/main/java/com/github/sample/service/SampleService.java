@@ -1,27 +1,18 @@
 package com.github.sample.service;
 
-import com.github.izerui.annotation.Feedback;
-import com.github.sample.dao.SampleDao;
+public interface SampleService {
 
-import java.util.concurrent.*;
+    /**
+     * 获取用户
+     * @param user
+     * @return
+     */
+    String getUserName(String user);
 
-public class SampleService {
-
-    private ExecutorService service = new ThreadPoolExecutor(5, 10,
-            0L, TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<Runnable>());
-
-    @Feedback("水水水水")
-    public String getUserName(String user) throws ExecutionException, InterruptedException {
-        Future<String> future = service.submit(() -> {
-            SampleDao sampleDao = new SampleDao();
-            return sampleDao.getName(user, false);
-        });
-        return future.get();
-
-//        System.out.println("fff");
-//        SampleDao sampleDao = new SampleDao();
-//        sampleDao.getVoid("ff", true);
-//        return "sss";
-    }
+    /**
+     * 写入方法
+     * @param user
+     * @param admin
+     */
+    void writeName(String user, boolean admin);
 }

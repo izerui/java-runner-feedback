@@ -1,30 +1,25 @@
 package com.github.sample;
 
-import com.github.sample.controller.SampleController;
-import com.github.sample.service.SampleService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.scheduling.annotation.EnableAsync;
 
-import java.util.Random;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.IntStream;
 
-public class Application {
+@SpringBootApplication
+@EnableAsync
+@EnableFeignClients
+public class Application implements CommandLineRunner {
+
     public static void main(String[] args) throws InterruptedException, ExecutionException {
-        new SampleService().getUserName("232");
-        int forNum = 100;
-        CountDownLatch countDownLatch = new CountDownLatch(forNum);
-        IntStream.range(0, forNum).forEach(value -> {
-            new Thread(() -> {
-                SampleController controller = new SampleController();
-                String name = controller.testPost("uid".concat(new Random().nextInt() + ""));
-                System.out.println("thread:" + Thread.currentThread().getName() + " name: " + name);
-                countDownLatch.countDown();
-            }).start();
-        });
-        countDownLatch.await();
+        SpringApplication.run(Application.class, args);
+    }
 
-//        SampleController controller = new SampleController();
-//        String name = controller.testPost("uid".concat(new Random().nextInt() + ""));
-//        System.out.println("thread:" + Thread.currentThread().getName() + " name: " + name);
+    @Override
+    public void run(String... args) throws Exception {
+
     }
 }
