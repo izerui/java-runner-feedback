@@ -1,6 +1,6 @@
 package com.github.izerui.logger;
 
-import com.github.izerui.Context;
+import com.github.izerui.context.Context;
 import com.github.izerui.PremainAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.description.type.TypeDescription;

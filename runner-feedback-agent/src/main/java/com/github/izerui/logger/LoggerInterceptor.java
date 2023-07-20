@@ -1,9 +1,11 @@
 package com.github.izerui.logger;
 
-import com.github.izerui.Context;
 import com.github.izerui.annotation.Feedback;
 import com.github.izerui.ansi.AnsiColor;
 import com.github.izerui.ansi.AnsiOutput;
+import com.github.izerui.context.Context;
+import com.github.izerui.context.MethodContext;
+import com.github.izerui.context.TraceContext;
 import net.bytebuddy.implementation.bind.annotation.*;
 
 import java.lang.reflect.Method;
@@ -43,7 +45,7 @@ public class LoggerInterceptor {
         long start = System.currentTimeMillis();
         Object result = null;
         try {
-            Context.Trace.generateIfNone(method.getAnnotation(Feedback.class));
+            TraceContext.generateIfNone(method.getAnnotation(Feedback.class));
             result = callable.call();
             return result;
         } catch (Exception e) {
@@ -56,7 +58,7 @@ public class LoggerInterceptor {
                 });
                 Class targetClass = target.getClass();
                 Class declaringClass = method.getDeclaringClass();
-                int methodLine = Context.getClassMethodLine(method);
+                int methodLine = MethodContext.getLine(method);
                 if (methodLine != -1 || Context.DEEP_SHOW) {
                     System.out.println(String.format("%s [%s]【%s】 %s  %s(%s.java:%s)#%s %s => %s",
                             // 时间
@@ -64,7 +66,7 @@ public class LoggerInterceptor {
                             // 线程名
                             Thread.currentThread().getName(),
                             // traceId
-                            AnsiOutput.toString(AnsiColor.GREEN, Context.Trace.getTraceNameId()),
+                            AnsiOutput.toString(AnsiColor.GREEN, TraceContext.getTraceNameId()),
                             // 耗时
                             AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, (System.currentTimeMillis() - start) + "ms"),
                             // 包名

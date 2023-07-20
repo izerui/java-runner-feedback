@@ -1,6 +1,6 @@
 package com.github.izerui.structure;
 
-import com.github.izerui.Context;
+import com.github.izerui.context.Context;
 import com.github.izerui.PremainAgent;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;

@@ -1,6 +1,7 @@
 package com.github.izerui.structure;
 
-import com.github.izerui.Context;
+import com.github.izerui.context.Context;
+import com.github.izerui.context.MethodContext;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
@@ -15,7 +16,7 @@ public class StructureClassVisitor extends ClassVisitor {
         super(Context.ASM_VERSION, classWriter);
         this.className = className;
         this.classWriter = classWriter;
-        Context.clearMethodLinesByClassName(className);
+        MethodContext.removeByClassName(className);
     }
 
     @Override
@@ -24,7 +25,7 @@ public class StructureClassVisitor extends ClassVisitor {
         MethodVisitor methodVisitor = new MethodVisitor(Context.ASM_VERSION, mv) {
             @Override
             public void visitLineNumber(int line, Label start) {
-                Context.addMethodLine(className, methodName, descriptor, line);
+                MethodContext.addLine(className, methodName, descriptor, line);
             }
         };
         return methodVisitor;
