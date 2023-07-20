@@ -137,7 +137,7 @@ public class TracerContext {
         // 方法所属行号
         protected int methodLine;
         // 子集span
-        private List<Span> children = new ArrayList<>();
+        private List<Span> children;
 
         /**
          * 从当前节点循环树
@@ -183,25 +183,28 @@ public class TracerContext {
          *
          * @param lines  lines集合
          * @param prefix 前缀
-         * @param isRoot 是否是根
+         * @param isTail 是否tab
          * @param line   当前line
          */
-        private void appendLines(List<String> lines, String prefix, boolean isRoot, ILine line) {
+        private void appendLines(List<String> lines, String prefix, boolean isTail, ILine line) {
             if (prefix == null) {
                 prefix = "";
             }
             if (prefix.equals("")) {
                 lines.add(line.getLine(this));
             } else {
-                lines.add(prefix + (isRoot ? "└── " : "├── ") + line.getLine(this));
+                lines.add(prefix + (isTail ? "└── " : "├── ") + line.getLine(this));
             }
             List<Span> children = getChildren();
+            if (children == null) {
+                return;
+            }
             for (int i = 0; i < children.size() - 1; i++) {
-                this.children.get(i).appendLines(lines, prefix + (isRoot ? "    " : "│   "), false, line);
+                this.children.get(i).appendLines(lines, prefix + (isTail ? "    " : "│   "), false, line);
             }
             if (this.children.size() > 0) {
                 this.children.get(this.children.size() - 1)
-                        .appendLines(lines, prefix + (isRoot ? "    " : "│   "), true, line);
+                        .appendLines(lines, prefix + (isTail ? "    " : "│   "), true, line);
             }
         }
 
