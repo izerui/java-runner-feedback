@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * trace跟踪
@@ -80,7 +79,7 @@ public class Tracer {
             @Override
             protected boolean isRoot(Span item) {
                 // 入口span 或者 非指定包下的class类的span
-                return item.isRootInComming();
+                return item.isRootInComming() || !Context.matchPackages(item.inComingClassName);
             }
 
             @Override
@@ -107,8 +106,7 @@ public class Tracer {
             }
         };
         List<Span> trees = treeMapper.treeMap(spans);
-        List<Span> unMarked = spans.stream().filter(span -> span.mark == null).collect(Collectors.toList());
-        trees.addAll(unMarked);
+        Collections.reverse(trees);
         return trees;
     }
 
