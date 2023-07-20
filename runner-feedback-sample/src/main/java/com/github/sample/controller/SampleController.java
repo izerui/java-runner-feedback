@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 public class SampleController {
 
@@ -18,10 +20,10 @@ public class SampleController {
 
     @Feedback("testPost")
     @GetMapping("/")
-    public String testPost(String user) throws Exception {
-        sampleService.writeName(user, true);
+    public String testPost() throws Exception {
+        sampleService.writeName(UUID.randomUUID().toString(), true);
         String home = baiduClient.getHome();
         System.out.println(home);
-        return sampleService.getUserName(user);
+        return sampleService.getUserName(UUID.randomUUID().toString());
     }
 }
