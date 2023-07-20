@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * trace跟踪
@@ -44,11 +45,10 @@ public class Tracer {
     /**
      * 输出打印树状请求链路
      */
-    public void print() {
-        List<Span> trees = getTreeSpans();
+    public void print(List<Span> spans) {
         System.out.println("☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟");
         System.out.println(AnsiOutput.toString(AnsiColor.GREEN, String.format("【start:%s name:%s traceId:%s time:%s】", Context.DATE_TIME_FORMATTER.format(new Date(start)), name, id, (end - start) + "ms")));
-        for (Span span : trees) {
+        for (Span span : spans) {
             span.printTree(item -> String.format("%s %s  %s(%s:%s)#%s %s 【%s】",
                     // 是否成功
                     item.success ? AnsiOutput.toString(AnsiColor.GREEN, "[T]") : AnsiOutput.toString(AnsiColor.RED, "[F]"),
@@ -75,12 +75,12 @@ public class Tracer {
      *
      * @return
      */
-    private List<Span> getTreeSpans() {
+    public List<Span> getTreeSpans() {
         TreeMapper<Span, Span> treeMapper = new TreeMapper<Span, Span>() {
             @Override
             protected boolean isRoot(Span item) {
                 // 入口span 或者 非指定包下的class类的span
-                return item.isRootInComming() || !Context.matchPackages(item.inComingClassName);
+                return item.isRootInComming();
             }
 
             @Override
@@ -107,7 +107,8 @@ public class Tracer {
             }
         };
         List<Span> trees = treeMapper.treeMap(spans);
-        Collections.reverse(trees);
+        List<Span> unMarked = spans.stream().filter(span -> span.mark == null).collect(Collectors.toList());
+        trees.addAll(unMarked);
         return trees;
     }
 

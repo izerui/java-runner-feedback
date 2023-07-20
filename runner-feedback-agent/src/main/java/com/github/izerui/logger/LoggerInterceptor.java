@@ -21,8 +21,6 @@ import java.util.stream.Collectors;
  */
 public class LoggerInterceptor {
 
-    private final static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
     /**
      * 进行方法拦截, 注意这里可以对所有修饰符的修饰的方法（包含private的方法）进行拦截
      *
@@ -89,12 +87,16 @@ public class LoggerInterceptor {
                                 .threadName(Thread.currentThread().getName())
                                 .method(method)
                                 .methodLine(methodLine)
+                                .currentClassName(currentStackFrame.getClassName())
+                                .currentMethodName(currentStackFrame.getMethodName())
+                                .currentMethodDescriptor(currentStackFrame.getDescriptor())
                                 .inComingClassName(inComingStackFrame.getClassName())
                                 .inComingMethodName(inComingStackFrame.getMethodName())
                                 .inComingMethodDescriptor(inComingStackFrame.getDescriptor())
                                 .build());
                     }
                     if (rootInComming) {
+                        tracer.setEnd(end);
                         if (Context.DEBUGGER) {
                             System.out.println("=================================================");
                             List<Span> spans = tracer.getSpans();
@@ -104,9 +106,9 @@ public class LoggerInterceptor {
                                 System.out.println();
                             }
                             System.out.println("=================================================");
+                            tracer.print(tracer.getSpans());
                         }
-                        tracer.setEnd(end);
-                        tracer.print();
+                        tracer.print(tracer.getTreeSpans());
                     }
                 }
             } catch (Exception ex) {

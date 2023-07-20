@@ -40,6 +40,12 @@ public class Span {
     protected String threadName;
     // 方法所属行号
     protected int methodLine;
+    // 当前类名
+    protected String currentClassName;
+    // 当前方法
+    protected String currentMethodName;
+    // 当前调用者方法描述符
+    protected String currentMethodDescriptor;
     // 外部调用者
     protected String inComingClassName;
     // 外部调用者方法名
@@ -57,10 +63,10 @@ public class Span {
      * @return
      */
     public String getComingKey() {
-        String comingClassName = Context.getOriginName(getDeclaringClass().getName(), "$$");
-        String comingMethodName = Context.getOriginName(method.getName(), "$");
-        String descriptor = getDescriptor();
-        return comingClassName + "#" + comingMethodName + descriptor;
+        String cClassName = Context.getOriginName(currentClassName, "$$");
+        String cMethodName = Context.getOriginName(currentMethodName, "$");
+        String cDescriptor = currentMethodDescriptor;
+        return cClassName + "#" + cMethodName + cDescriptor;
     }
 
     /**
