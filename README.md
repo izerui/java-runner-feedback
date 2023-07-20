@@ -12,6 +12,9 @@ java vm options添加:
 ```
 
 
+调试:
+添加 vm options并且添加 agent模块的 前置build任务`clean package`
+
 链接：https://www.jianshu.com/p/672a9bdd12e1
 常用注解说明
 ```

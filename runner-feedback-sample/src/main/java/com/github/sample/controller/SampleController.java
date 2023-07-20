@@ -1,6 +1,6 @@
 package com.github.sample.controller;
 
-import com.github.izerui.annotation.Feedback;
+import com.github.izerui.annotation.Tracer;
 import com.github.sample.client.BaiduClient;
 import com.github.sample.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ public class SampleController {
     private BaiduClient baiduClient;
 
 
-    @Feedback("testPost")
+    @Tracer("testPost")
     @GetMapping("/")
     public String testPost() throws Exception {
         sampleService.writeName(UUID.randomUUID().toString(), true);

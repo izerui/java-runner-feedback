@@ -1,9 +1,10 @@
 package com.github.izerui.context;
 
-import com.github.izerui.annotation.Feedback;
+import com.github.izerui.annotation.Tracer;
 
 import java.util.UUID;
 
+@Deprecated
 public class TraceContext {
 
     private final static ThreadLocal<String> TRACE_ID = new InheritableThreadLocal<>();
@@ -25,7 +26,7 @@ public class TraceContext {
      *
      * @param feedback
      */
-    public static void generateIfNone(Feedback feedback) {
+    public static void generateIfNone(Tracer feedback) {
         // 未声明@Feedback的方法不生成 name和id
         if (feedback == null) {
             return;

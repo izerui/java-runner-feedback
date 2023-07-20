@@ -3,6 +3,8 @@ package com.github.izerui.context;
 import com.github.izerui.ansi.AnsiOutput;
 import org.objectweb.asm.Opcodes;
 
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
 public final class Context {
@@ -30,6 +32,8 @@ public final class Context {
             "org.springframework.cloud.openfeign.FeignClient"
     };
 
+
+    public final static SimpleDateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     static {
         AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);

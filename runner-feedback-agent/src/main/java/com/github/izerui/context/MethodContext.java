@@ -46,23 +46,28 @@ public class MethodContext {
 
     /**
      * 获取方法所属类的行号
-     *
-     * @param method
-     * @return
      */
-    public static int getLine(Method method) {
-        String declaringClassName = method.getDeclaringClass().getName();
-        if (!CLASS_METHOD_LINES_MAP.containsKey(declaringClassName)) {
-            CLASS_METHOD_LINES_MAP.put(declaringClassName, new HashMap<>());
+    public static int getLine(String className, String methodName, String descriptor) {
+        Map<String, Integer> lineMap = CLASS_METHOD_LINES_MAP.get(className);
+        if (lineMap == null) {
+            return -1;
         }
-        Map<String, Integer> lineMap = CLASS_METHOD_LINES_MAP.get(declaringClassName);
-        String methodDescriptor = getMethodDescriptor(method);
-        String _key = method.getName().concat(methodDescriptor);
+        String _key = methodName.concat(descriptor);
         Integer line = lineMap.get(_key);
         if (line == null) {
             return -1;
         }
         return line;
+    }
+
+    /**
+     * 获取方法所属类的行号
+     *
+     * @param method
+     * @return
+     */
+    public static int getLine(Method method) {
+        return getLine(method.getDeclaringClass().getName(), method.getName(), getMethodDescriptor(method));
     }
 
     /**
