@@ -1,5 +1,7 @@
 package com.github.sample.service;
 
+import org.springframework.scheduling.annotation.Async;
+
 public interface SampleService {
 
     /**

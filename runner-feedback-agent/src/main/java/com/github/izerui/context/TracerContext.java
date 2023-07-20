@@ -2,6 +2,7 @@ package com.github.izerui.context;
 
 import com.github.izerui.ansi.AnsiColor;
 import com.github.izerui.ansi.AnsiOutput;
+import com.github.izerui.support.TreeMapper;
 import lombok.Builder;
 import lombok.Data;
 
@@ -38,15 +39,6 @@ public class TracerContext {
         return TRACER_THREAD_LOCAL.get();
     }
 
-    private static String getOriginClassName(String proxyClassName) {
-        int proxySplitIndex = proxyClassName.indexOf("$$");
-        if (proxySplitIndex > -1) {
-            return proxyClassName.substring(0, proxyClassName.indexOf("$$"));
-        }
-        return proxyClassName;
-    }
-
-
     /**
      * trace跟踪
      */
@@ -77,34 +69,64 @@ public class TracerContext {
             spans.add(span);
         }
 
+        /**
+         * 输出打印树状请求链路
+         */
         public void print() {
             Tracer tracer = TRACER_THREAD_LOCAL.get();
             if (tracer != null) {
+                List<Span> trees = tracer.getTreeSpans();
                 System.out.println("☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟");
-                System.out.println(String.format("%s %s %s", id, name, (end - start) + "ms"));
-                for (Span span : spans) {
-                    span.printTree(item -> String.format("%s [%s]【%s】 %s  %s(%s:%s)#%s%s",
-                            // 时间
-                            Context.DATE_TIME_FORMATTER.format(new Date(item.start)),
-                            // 线程名
-                            item.threadName,
-                            // traceId
-                            AnsiOutput.toString(AnsiColor.GREEN, TraceContext.getTraceNameId()),
+                System.out.println(AnsiOutput.toString(AnsiColor.GREEN, String.format("【time:{} name:%s traceId:%s time:%s】", new Date(start), name, id, (end - start) + "ms")));
+                for (Span span : trees) {
+                    span.printTree(item -> String.format("%s %s  %s(%s:%s)#%s %s 【%s】",
+                            // 是否成功
+                            item.success ? AnsiOutput.toString(AnsiColor.GREEN, "[T]") : AnsiOutput.toString(AnsiColor.RED, "[F]"),
                             // 耗时
-                            AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, (item.end - item.start) + "ms"),
+                            AnsiOutput.toString(AnsiColor.YELLOW, (item.end - item.start) + "ms"),
                             // 包名
                             (!item.targetClass.equals(item.declaringClass) && item.methodLine == -1) ? item.targetClass.getPackageName() : item.declaringClass.getPackageName(),
                             // 文件名
-                            item.fileName,
+                            AnsiOutput.toString(AnsiColor.BLUE, item.fileName),
                             // 行号
                             item.methodLine,
                             // 方法
-                            AnsiOutput.toString(AnsiColor.YELLOW, item.method.getName()),
+                            AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, item.method.getName()),
                             // 方法描述符
-                            AnsiOutput.toString(AnsiColor.BRIGHT_GREEN, item.descriptor)));
+                            AnsiOutput.toString(AnsiColor.BRIGHT_GREEN, item.descriptor),
+                            // 线程名
+                            item.threadName));
                 }
                 System.out.println("☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝");
             }
+        }
+
+        private List<Span> getTreeSpans() {
+            TreeMapper<Span, Span> treeMapper = new TreeMapper<Span, Span>() {
+                @Override
+                protected boolean isRoot(Span item) {
+                    return item.isRootInComming();
+                }
+
+                @Override
+                protected boolean isParent(Span child, Span parent) {
+                    return child.getParentComingKey().equals(parent.getComingKey());
+                }
+
+                @Override
+                protected Span map(Span item, Span parent) {
+                    return item;
+                }
+
+                @Override
+                protected void addChild(Span child, Span parent) {
+                    if (parent.getChildren() == null) {
+                        parent.setChildren(new ArrayList<>());
+                    }
+                    parent.getChildren().add(child);
+                }
+            };
+            return treeMapper.treeMap(spans);
         }
 
     }
@@ -116,12 +138,16 @@ public class TracerContext {
     @Builder
     public static class Span {
 
+        // 是否是第一个请求入口
+        protected boolean rootInComming;
         // 跟踪id
         protected String traceId;
         // 当前对象持有者所属类
         protected Class declaringClass;
         // 当前对象执行的方法所属类
         protected Class targetClass;
+        // 是否成功调用
+        protected boolean success;
         // 文件名
         protected String fileName;
         // 方法
@@ -136,8 +162,38 @@ public class TracerContext {
         protected String threadName;
         // 方法所属行号
         protected int methodLine;
+        // 外部调用者
+        protected String inComingClassName;
+        // 外部调用者方法名
+        protected String inComingMethodName;
+        // 外部调用者方法描述符
+        protected String inComingMethodDescriptor;
         // 子集span
         private List<Span> children;
+
+        /**
+         * 当前执行类+方法+描述符的标识key
+         *
+         * @return
+         */
+        public String getComingKey() {
+            String comingClassName = Context.getOriginName(getDeclaringClass().getName(), "$$");
+            String comingMethodName = Context.getOriginName(method.getName(), "$");
+            String descriptor = getDescriptor();
+            return comingClassName + comingMethodName + descriptor;
+        }
+
+        /**
+         * 外部调用者类+方法+描述符的标识key
+         *
+         * @return
+         */
+        public String getParentComingKey() {
+            String parentComingClassName = Context.getOriginName(inComingClassName, "$$");
+            String parentComingMethodName = Context.getOriginName(inComingMethodName, "$");
+            String parentDescriptor = inComingMethodDescriptor;
+            return parentComingClassName + parentComingMethodName + parentDescriptor;
+        }
 
         /**
          * 从当前节点循环树

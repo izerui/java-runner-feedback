@@ -4,8 +4,9 @@ import com.github.izerui.ansi.AnsiOutput;
 import org.objectweb.asm.Opcodes;
 
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
 
 public final class Context {
 
@@ -69,6 +70,71 @@ public final class Context {
             }
         }
         return false;
+    }
+
+
+    /**
+     * 获取原始名
+     *
+     * @param proxyName       代理名称
+     * @param proxyIdentifier 代理标识符, class类型: $$  method类型: $
+     * @return
+     */
+    public static String getOriginName(String proxyName, String proxyIdentifier) {
+        String originMethodName = proxyName;
+        int proxySplitIndex = proxyName.indexOf(proxyIdentifier);
+        if (proxySplitIndex > -1) {
+            originMethodName = proxyName.substring(0, proxySplitIndex);
+        }
+        if (originMethodName == null || "".equals(originMethodName)) {
+            originMethodName = proxyName;
+        }
+        return originMethodName;
+    }
+
+
+    public static final String[] TRACE_CHARS = new String[]{"a", "b", "c", "d", "e", "f",
+            "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s",
+            "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5",
+            "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I",
+            "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
+            "W", "X", "Y", "Z"};
+
+    /**
+     * 生成一个8位的随机串
+     *
+     * @return
+     */
+    public static String generateTraceId() {
+        StringBuffer shortBuffer = new StringBuffer();
+        String uuid = UUID.randomUUID().toString().replace("-", "");
+        for (int i = 0; i < 8; i++) {
+            String str = uuid.substring(i * 4, i * 4 + 4);
+            int x = Integer.parseInt(str, 16);
+            shortBuffer.append(TRACE_CHARS[x % 0x3E]);
+        }
+        return shortBuffer.toString();
+    }
+
+
+    /**
+     * 找到外部调用者(inComing)
+     *
+     * @param stackFrames
+     * @return
+     */
+    public static StackWalker.StackFrame getInComingStackFrame(List<StackWalker.StackFrame> stackFrames) {
+        // 0 为当前拦截器
+        // 1 为当前调用者
+        // 2 为外部调用者(可能), 不过需要通过扫描的包路径循环查找最合适的外部调用者
+        int begin = 2;
+        for (int i = begin; i < stackFrames.size(); i++) {
+            StackWalker.StackFrame inComingStackFrame = stackFrames.get(i);
+            if (Context.matchPackages(inComingStackFrame.getClassName())) {
+                return inComingStackFrame;
+            }
+        }
+        return stackFrames.get(begin);
     }
 
 

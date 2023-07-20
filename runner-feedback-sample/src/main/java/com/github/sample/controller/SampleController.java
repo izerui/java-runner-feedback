@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 @RestController
 public class SampleController {
@@ -22,9 +21,7 @@ public class SampleController {
     @Tracer("testPost")
     @GetMapping("/")
     public String testPost() throws Exception {
-        CompletableFuture.runAsync(() -> {
-            sampleService.writeName(UUID.randomUUID().toString(), true);
-        });
+        sampleService.writeName(UUID.randomUUID().toString(), true);
         String home = baiduClient.getHome();
         System.out.println(home);
         return sampleService.getUserName(UUID.randomUUID().toString());

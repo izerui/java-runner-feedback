@@ -1,7 +1,7 @@
 package com.github.izerui.logger;
 
-import com.github.izerui.context.Context;
 import com.github.izerui.PremainAgent;
+import com.github.izerui.context.Context;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
@@ -49,10 +49,10 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
     private ElementMatcher.Junction<? super TypeDescription> withOutAnnotation(ElementMatcher.Junction<? super TypeDescription> matcher, String... annotationClassNames) {
         if (annotationClassNames != null) {
             for (String annotationClassName : annotationClassNames) {
-                try{
+                try {
                     Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) Class.forName(annotationClassName);
                     matcher = matcher.and(ElementMatchers.not(ElementMatchers.hasAnnotation(ElementMatchers.annotationType(annotationClass))));
-                }catch (Exception ex) {
+                } catch (Exception ex) {
                     ;
                 }
             }

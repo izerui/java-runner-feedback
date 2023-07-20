@@ -1,6 +1,5 @@
 package com.github.izerui;
 
-import com.alibaba.ttl.threadpool.agent.TtlAgent;
 import com.github.izerui.logger.LoggerTransformer;
 import com.github.izerui.structure.StructureTransformer;
 
@@ -21,7 +20,6 @@ public class Agent {
      * @param instrumentation
      */
     public static void premain(String args, Instrumentation instrumentation) {
-        TtlAgent.premain(args, instrumentation);
         Arrays.stream(PREMAIN_AGENTS).forEach(premainAgent -> premainAgent.premain(args, instrumentation));
     }
 

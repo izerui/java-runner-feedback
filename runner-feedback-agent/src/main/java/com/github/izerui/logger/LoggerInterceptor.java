@@ -10,13 +10,12 @@ import java.lang.reflect.Method;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 /**
  * 执行拦截器
+ *
  * @author liuyuhua
  */
 public class LoggerInterceptor {
@@ -45,12 +44,13 @@ public class LoggerInterceptor {
     ) throws Exception {
         long start = System.currentTimeMillis();
         Tracer tracerAnnotation = method.getAnnotation(Tracer.class);
+        boolean success = true;
         // true: 表示是入口方法
-        boolean inComming = false;
+        boolean rootInComming = false;
         if (tracerAnnotation != null && TracerContext.getTracer() == null) {
-            inComming = TracerContext.addTracerAndReturnTrue(
+            rootInComming = TracerContext.addTracerAndReturnTrue(
                     TracerContext.Tracer.builder()
-                            .id(generateTraceId())
+                            .id(Context.generateTraceId())
                             .name(tracerAnnotation.value())
                             .start(start)
                             .spans(new ArrayList<>())
@@ -60,6 +60,7 @@ public class LoggerInterceptor {
         try {
             return callable.call();
         } catch (Exception e) {
+            success = false;
             // 进行异常信息上报
             throw e;
         } finally {
@@ -67,7 +68,8 @@ public class LoggerInterceptor {
                 long end = System.currentTimeMillis();
                 List<StackWalker.StackFrame> stackFrames = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(stackFrameStream -> stackFrameStream.collect(Collectors.toList()));
                 StackWalker.StackFrame currentStackFrame = stackFrames.get(1);
-
+                // 外部对象调用者
+                StackWalker.StackFrame inComingStackFrame = Context.getInComingStackFrame(stackFrames);
                 // 当tracer存在，则后续跨度及子线程都需要拦截记录
                 TracerContext.Tracer tracer = TracerContext.getTracer();
                 if (tracer != null) {
@@ -75,6 +77,8 @@ public class LoggerInterceptor {
                     // 当能获取到本地类路径的方法行号则记录， 或者deepshow参数为true表示指定包下对象的父类方法也记录
                     if (methodLine != -1 || Context.DEEP_SHOW) {
                         tracer.addSpan(TracerContext.Span.builder()
+                                .rootInComming(rootInComming)
+                                .success(success)
                                 .targetClass(target.getClass())
                                 .declaringClass(method.getDeclaringClass())
                                 .fileName(currentStackFrame.getFileName())
@@ -84,9 +88,12 @@ public class LoggerInterceptor {
                                 .threadName(Thread.currentThread().getName())
                                 .method(method)
                                 .methodLine(methodLine)
+                                .inComingClassName(inComingStackFrame.getClassName())
+                                .inComingMethodName(inComingStackFrame.getMethodName())
+                                .inComingMethodDescriptor(inComingStackFrame.getDescriptor())
                                 .build());
                     }
-                    if (inComming) {
+                    if (rootInComming) {
                         tracer.setEnd(end);
                         tracer.print();
                     }
@@ -95,49 +102,6 @@ public class LoggerInterceptor {
                 ex.printStackTrace();
             }
         }
-    }
-
-    @IgnoreForBinding
-    public static StackWalker.StackFrame getCurrentStackFrame() {
-        Optional<StackWalker.StackFrame> first = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
-                .walk(stackFrameStream -> {
-                    return stackFrameStream.skip(1).limit(1);
-                }).findFirst();
-        return first.orElse(null);
-    }
-
-    @IgnoreForBinding
-    private static String getOriginClassName(String proxyClassName) {
-        int proxySplitIndex = proxyClassName.indexOf("$$");
-        if (proxySplitIndex > -1) {
-            return proxyClassName.substring(0, proxyClassName.indexOf("$$"));
-        }
-        return proxyClassName;
-    }
-
-
-    public static final String[] TRACE_CHARS = new String[]{"a", "b", "c", "d", "e", "f",
-            "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s",
-            "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5",
-            "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I",
-            "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
-            "W", "X", "Y", "Z"};
-
-    /**
-     * 生成一个8位的随机串
-     *
-     * @return
-     */
-    @IgnoreForBinding
-    private static String generateTraceId() {
-        StringBuffer shortBuffer = new StringBuffer();
-        String uuid = UUID.randomUUID().toString().replace("-", "");
-        for (int i = 0; i < 8; i++) {
-            String str = uuid.substring(i * 4, i * 4 + 4);
-            int x = Integer.parseInt(str, 16);
-            shortBuffer.append(TRACE_CHARS[x % 0x3E]);
-        }
-        return shortBuffer.toString();
     }
 
 }

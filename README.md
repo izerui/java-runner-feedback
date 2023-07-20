@@ -6,9 +6,10 @@ java 类 调用过程记录 agent
 使用方式：
 java vm options添加:
 ```
+-javaagent:/Users/serv/github/java-runner-feedback/transmittable-thread-local-2.14.3.jar // 解决线程池调用的threadlocal传递问题
 -javaagent:/Users/liuyuhua/github/java-runner-feedback/runner-feedback-agent/target/runner-feedback-agent.jar
--Dfeedback.packages=com.github,com.yj2025,com.ecworking // 多个包名以逗号分隔
--Dfeedback.deepshow=true // 可选，当为true时可输出定义的包名以外的类的继承调用日志 默认为false
+-Dfeedback.packages=com.yj2025,com.ecworking // 多个包名以逗号分隔(尽量按顺序优先匹配)
+-Dfeedback.deepshow=false // 可选(减少调用链输出)，当为true时可输出定义的包名以外的类的继承调用日志 默认为true
 ```
 
 

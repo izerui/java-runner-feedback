@@ -3,7 +3,6 @@ package com.github.sample.service.impl;
 import com.github.sample.dao.SampleDao;
 import com.github.sample.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
