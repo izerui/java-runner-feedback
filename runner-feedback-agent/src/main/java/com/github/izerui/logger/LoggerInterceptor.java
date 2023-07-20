@@ -4,6 +4,7 @@ import com.github.izerui.annotation.Tracer;
 import com.github.izerui.context.Context;
 import com.github.izerui.context.MethodContext;
 import com.github.izerui.context.TracerContext;
+import com.github.izerui.support.Span;
 import net.bytebuddy.implementation.bind.annotation.*;
 
 import java.lang.reflect.Method;
@@ -49,7 +50,7 @@ public class LoggerInterceptor {
         boolean rootInComming = false;
         if (tracerAnnotation != null && TracerContext.getTracer() == null) {
             rootInComming = TracerContext.addTracerAndReturnTrue(
-                    TracerContext.Tracer.builder()
+                    com.github.izerui.support.Tracer.builder()
                             .id(Context.generateTraceId())
                             .name(tracerAnnotation.value())
                             .start(start)
@@ -71,12 +72,12 @@ public class LoggerInterceptor {
                 // 外部对象调用者
                 StackWalker.StackFrame inComingStackFrame = Context.getInComingStackFrame(stackFrames);
                 // 当tracer存在，则后续跨度及子线程都需要拦截记录
-                TracerContext.Tracer tracer = TracerContext.getTracer();
+                com.github.izerui.support.Tracer tracer = TracerContext.getTracer();
                 if (tracer != null) {
                     int methodLine = MethodContext.getLine(method.getDeclaringClass().getName(), method.getName(), currentStackFrame.getDescriptor());
                     // 当能获取到本地类路径的方法行号则记录， 或者deepshow参数为true表示指定包下对象的父类方法也记录
                     if (methodLine != -1 || Context.DEEP_SHOW) {
-                        tracer.addSpan(TracerContext.Span.builder()
+                        tracer.addSpan(Span.builder()
                                 .rootInComming(rootInComming)
                                 .success(success)
                                 .targetClass(target.getClass())
