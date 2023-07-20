@@ -23,6 +23,11 @@ public final class Context {
     public final static String[] PACKAGES;
 
     /**
+     * 是否调试状态，输出拦截的方法信息
+     */
+    public static boolean DEBUGGER = false;
+
+    /**
      * 忽略指定包名下的类
      */
     public final static String[] IGNORE_PACKAGES = {
@@ -49,6 +54,10 @@ public final class Context {
         Object deepshow = properties.get("feedback.deepshow");
         if (deepshow != null) {
             DEEP_SHOW = Boolean.valueOf(String.valueOf(properties.get("feedback.deepshow")));
+        }
+        Object debugger = properties.get("feedback.debugger");
+        if (debugger != null) {
+            DEBUGGER = Boolean.valueOf(String.valueOf(properties.get("feedback.debugger")));
         }
     }
 

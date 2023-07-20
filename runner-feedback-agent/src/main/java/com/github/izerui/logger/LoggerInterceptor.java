@@ -95,6 +95,16 @@ public class LoggerInterceptor {
                                 .build());
                     }
                     if (rootInComming) {
+                        if (Context.DEBUGGER) {
+                            System.out.println("=================================================");
+                            List<Span> spans = tracer.getSpans();
+                            for (Span span : spans) {
+                                System.out.println(span.getComingKey());
+                                System.out.println(span.getParentComingKey());
+                                System.out.println();
+                            }
+                            System.out.println("=================================================");
+                        }
                         tracer.setEnd(end);
                         tracer.print();
                     }
