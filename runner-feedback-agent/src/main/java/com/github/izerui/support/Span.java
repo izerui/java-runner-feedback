@@ -46,6 +46,8 @@ public class Span {
     protected String inComingMethodName;
     // 外部调用者方法描述符
     protected String inComingMethodDescriptor;
+    // 只是一个标记, 用法一: 表示是否增加到树中
+    protected transient Integer mark;
     // 子集span
     private List<Span> children;
 
@@ -58,7 +60,7 @@ public class Span {
         String comingClassName = Context.getOriginName(getDeclaringClass().getName(), "$$");
         String comingMethodName = Context.getOriginName(method.getName(), "$");
         String descriptor = getDescriptor();
-        return comingClassName + comingMethodName + descriptor;
+        return comingClassName + "#" + comingMethodName + descriptor;
     }
 
     /**
@@ -70,7 +72,7 @@ public class Span {
         String parentComingClassName = Context.getOriginName(inComingClassName, "$$");
         String parentComingMethodName = Context.getOriginName(inComingMethodName, "$");
         String parentDescriptor = inComingMethodDescriptor;
-        return parentComingClassName + parentComingMethodName + parentDescriptor;
+        return parentComingClassName + "#" + parentComingMethodName + parentDescriptor;
     }
 
     /**

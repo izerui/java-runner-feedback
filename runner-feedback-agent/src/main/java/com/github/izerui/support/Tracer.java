@@ -2,10 +2,12 @@ package com.github.izerui.support;
 
 import com.github.izerui.ansi.AnsiColor;
 import com.github.izerui.ansi.AnsiOutput;
+import com.github.izerui.context.Context;
 import lombok.Builder;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -68,11 +70,17 @@ public class Tracer {
         System.out.println("☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝");
     }
 
+    /**
+     * 生成树
+     *
+     * @return
+     */
     private List<Span> getTreeSpans() {
         TreeMapper<Span, Span> treeMapper = new TreeMapper<Span, Span>() {
             @Override
             protected boolean isRoot(Span item) {
-                return item.isRootInComming();
+                // 入口span 或者 非指定包下的class类的span
+                return item.isRootInComming() || !Context.matchPackages(item.inComingClassName);
             }
 
             @Override
@@ -86,6 +94,11 @@ public class Tracer {
             }
 
             @Override
+            protected void mark(Span source, Span target) {
+                source.mark = 1;
+            }
+
+            @Override
             protected void addChild(Span child, Span parent) {
                 if (parent.getChildren() == null) {
                     parent.setChildren(new ArrayList<>());
@@ -93,7 +106,9 @@ public class Tracer {
                 parent.getChildren().add(child);
             }
         };
-        return treeMapper.treeMap(spans);
+        List<Span> trees = treeMapper.treeMap(spans);
+        Collections.reverse(trees);
+        return trees;
     }
 
 }

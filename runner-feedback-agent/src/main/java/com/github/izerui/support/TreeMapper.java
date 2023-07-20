@@ -57,9 +57,20 @@ public abstract class TreeMapper<S, T> {
                 T node = map(source, null);
                 assemblyChildren(sourceList, node);
                 results.add(node);
+                mark(source, node);
             }
         }
         return results;
+
+    }
+
+    /**
+     * 标记节点已经成功放入到树中
+     *
+     * @param source 源对象
+     * @param target 映射对象
+     */
+    protected void mark(S source, T target) {
 
     }
 
@@ -72,6 +83,7 @@ public abstract class TreeMapper<S, T> {
                 //继续添加node 的下级node
                 assemblyChildren(sourceList, tChild);
                 addChild(tChild, parent);
+                mark(source, tChild);
             }
         }
     }
