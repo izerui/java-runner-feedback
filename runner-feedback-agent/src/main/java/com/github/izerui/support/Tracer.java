@@ -47,7 +47,7 @@ public class Tracer {
     public void print() {
         List<Span> trees = getTreeSpans();
         System.out.println("☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟");
-        System.out.println(AnsiOutput.toString(AnsiColor.GREEN, String.format("【time:{} name:%s traceId:%s time:%s】", new Date(start), name, id, (end - start) + "ms")));
+        System.out.println(AnsiOutput.toString(AnsiColor.GREEN, String.format("【start:%s name:%s traceId:%s time:%s】", Context.DATE_TIME_FORMATTER.format(new Date(start)), name, id, (end - start) + "ms")));
         for (Span span : trees) {
             span.printTree(item -> String.format("%s %s  %s(%s:%s)#%s %s 【%s】",
                     // 是否成功
