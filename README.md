@@ -46,3 +46,6 @@ https://www.freebuf.com/sectool/279742.html
 
 apm:
 https://newrelic.com/
+
+
+将方法聚合下，相同的只显示一条，并记录时间合并，次数增加

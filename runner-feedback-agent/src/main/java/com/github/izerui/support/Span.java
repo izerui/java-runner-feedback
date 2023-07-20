@@ -57,6 +57,13 @@ public class Span {
     // 子集span
     private List<Span> children;
 
+    public List<Span> getChildren() {
+        if (children == null) {
+            children = new ArrayList<>();
+        }
+        return children;
+    }
+
     /**
      * 当前执行类+方法+描述符的标识key
      *

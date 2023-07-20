@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * trace跟踪
@@ -75,39 +76,17 @@ public class Tracer {
      * @return
      */
     public List<Span> getTreeSpans() {
-        TreeMapper<Span, Span> treeMapper = new TreeMapper<Span, Span>() {
-            @Override
-            protected boolean isRoot(Span item) {
-                // 入口span 或者 非指定包下的class类的span
-                return item.isRootInComming() || !Context.matchPackages(item.inComingClassName);
-            }
-
-            @Override
-            protected boolean isParent(Span child, Span parent) {
-                return child.getParentComingKey().equals(parent.getComingKey());
-            }
-
-            @Override
-            protected Span map(Span item, Span parent) {
-                return item;
-            }
-
-            @Override
-            protected void mark(Span source, Span target) {
-                source.mark = 1;
-            }
-
-            @Override
-            protected void addChild(Span child, Span parent) {
-                if (parent.getChildren() == null) {
-                    parent.setChildren(new ArrayList<>());
+        for (Span parent : spans) {
+            for (Span child : spans) {
+                if (parent.getComingKey().equals(child.getParentComingKey())) {
+                    parent.getChildren().add(child);
+                    child.setMark(1);
                 }
-                parent.getChildren().add(child);
             }
-        };
-        List<Span> trees = treeMapper.treeMap(spans);
-        Collections.reverse(trees);
-        return trees;
+        }
+        List<Span> collect = spans.stream().filter(span -> span.mark == null).collect(Collectors.toList());
+        Collections.reverse(collect);
+        return collect;
     }
 
 }

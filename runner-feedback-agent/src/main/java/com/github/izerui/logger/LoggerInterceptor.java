@@ -93,6 +93,7 @@ public class LoggerInterceptor {
                                 .inComingClassName(inComingStackFrame.getClassName())
                                 .inComingMethodName(inComingStackFrame.getMethodName())
                                 .inComingMethodDescriptor(inComingStackFrame.getDescriptor())
+                                .children(new ArrayList<>())
                                 .build());
                     }
                     if (rootInComming) {
@@ -106,7 +107,6 @@ public class LoggerInterceptor {
                                 System.out.println();
                             }
                             System.out.println("=================================================");
-                            tracer.print(tracer.getSpans());
                         }
                         tracer.print(tracer.getTreeSpans());
                     }
