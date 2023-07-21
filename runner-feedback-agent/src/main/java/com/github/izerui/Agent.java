@@ -28,6 +28,8 @@ public class Agent {
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, "插桩: runner-feedback-agent 成功!"));
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, "feedback.packages: " + Arrays.toString(Context.PACKAGES)));
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, "feedback.debugger: " + Context.DEBUGGER));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, "feedback.getter: " + Context.GETTER));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, "feedback.setter: " + Context.SETTER));
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, "使用@Tracer('标记方法')就可以拦截调用链并输出树状结构!"));
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, "开始愉快的玩耍吧!!!"));
         System.out.println("☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝");

@@ -23,6 +23,16 @@ public final class Context {
     public static boolean DEBUGGER = false;
 
     /**
+     * 是否记录get方法
+     */
+    public static boolean GETTER = false;
+
+    /**
+     * 是否记录set方法
+     */
+    public static boolean SETTER = false;
+
+    /**
      * 忽略指定包名下的类
      */
     public final static String[] IGNORE_PACKAGES = {
@@ -38,18 +48,34 @@ public final class Context {
 
     static {
         AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
-        Properties properties = System.getProperties();
-        String feedbackPackages = properties.getProperty("feedback.packages");
+        String feedbackPackages = getStringProperty("feedback.packages", null);
         if (feedbackPackages != null && !"".equals(feedbackPackages)) {
             PACKAGES = feedbackPackages.split(",");
         } else {
             System.out.println("未获取到正确的可【feedback】的包匹配字符串, 请正确配置agent类似: -javaagent:~/runner-feedback-agent.jar -Dfeedback.packages=com.github.sample,com.yj2025");
             PACKAGES = new String[0];
         }
-        Object debugger = properties.get("feedback.debugger");
-        if (debugger != null) {
-            DEBUGGER = Boolean.valueOf(String.valueOf(properties.get("feedback.debugger")));
+        DEBUGGER = getBoolProperty("feedback.debugger", DEBUGGER);
+        GETTER = getBoolProperty("feedback.getter", GETTER);
+        SETTER = getBoolProperty("feedback.setter", SETTER);
+    }
+
+    private static String getStringProperty(String key, String defaultValue) {
+        Properties properties = System.getProperties();
+        Object value = properties.get(key);
+        if (value != null) {
+            return String.valueOf(value);
         }
+        return defaultValue;
+    }
+
+    private static boolean getBoolProperty(String key, boolean defaultBool) {
+        Properties properties = System.getProperties();
+        Object bool = properties.get(key);
+        if (bool != null) {
+            return Boolean.valueOf(String.valueOf(bool));
+        }
+        return defaultBool;
     }
 
     /**

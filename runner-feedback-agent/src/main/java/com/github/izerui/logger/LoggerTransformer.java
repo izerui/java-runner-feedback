@@ -3,6 +3,7 @@ package com.github.izerui.logger;
 import com.github.izerui.PremainAgent;
 import com.github.izerui.context.Context;
 import net.bytebuddy.agent.builder.AgentBuilder;
+import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.MethodDelegation;
@@ -63,16 +64,19 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
 
     @Override
     public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader, JavaModule javaModule, ProtectionDomain protectionDomain) {
+        ElementMatcher.Junction<MethodDescription> matcher = ElementMatchers.any()
+                .and(ElementMatchers.not(ElementMatchers.isHashCode()))
+                .and(ElementMatchers.not(ElementMatchers.isEquals()))
+                .and(ElementMatchers.not(ElementMatchers.isClone()))
+                .and(ElementMatchers.not(ElementMatchers.isToString()));
+        if (!Context.GETTER) {
+            matcher = matcher.and(ElementMatchers.not(ElementMatchers.isGetter()));
+        }
+        if (!Context.SETTER) {
+            matcher = matcher.and(ElementMatchers.not(ElementMatchers.isSetter()));
+        }
         return builder
-                .method(
-                        ElementMatchers.any()
-                                .and(ElementMatchers.not(ElementMatchers.isHashCode()))
-                                .and(ElementMatchers.not(ElementMatchers.isEquals()))
-                                .and(ElementMatchers.not(ElementMatchers.isClone()))
-                                .and(ElementMatchers.not(ElementMatchers.isToString()))
-                                .and(ElementMatchers.not(ElementMatchers.isGetter()))
-                                .and(ElementMatchers.not(ElementMatchers.isSetter()))
-                )
+                .method(matcher)
                 .intercept(MethodDelegation.to(LoggerInterceptor.class)); // 委托
     }
 }
