@@ -6,7 +6,10 @@ import com.github.izerui.context.Context;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -114,16 +117,25 @@ public class Tracer {
 //        return treeMapper.treeMap(spans);
 
         for (Span span : spans) {
+            if (span.isRootInComming()) {
+                continue;
+            }
             for (String parentId : span.getParentIds()) {
-                Optional<Span> first = spans.stream().filter(sp -> sp.getId().equals(parentId)).findFirst();
-                if (first.isPresent()) {
-                    first.get().getChildren().add(span);
+                // 找到父级调用者
+                Span parent = spans.stream()
+                        .filter(sp -> sp.getId().equals(parentId))
+                        // 作为儿子的span不能拥有parent的id，否则就是死循环
+                        .filter(sp -> !span.isContains(sp.getId()))
+                        .findFirst()
+                        .orElse(null);
+                if (parent != null) {
+                    parent.getChildren().add(span);
                     span.setMark(1);
                     break;
                 }
             }
         }
-        List<Span> collect = spans.stream().filter(span -> span.mark == null).collect(Collectors.toList());
+        List<Span> collect = spans.stream().filter(span -> span.getMark() == null).collect(Collectors.toList());
         return collect;
     }
 

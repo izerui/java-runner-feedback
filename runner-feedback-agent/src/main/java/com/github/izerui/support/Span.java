@@ -2,13 +2,13 @@ package com.github.izerui.support;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.NonNull;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * trace跟踪中的一个跨度记录
@@ -18,7 +18,6 @@ import java.util.Objects;
 public class Span extends Stack {
 
     // 当前方法调用的帧
-    @NonNull
     protected List<StackWalker.StackFrame> stackFrames;
     // 被拦截的目标对象
     protected Object target;
@@ -94,6 +93,29 @@ public class Span extends Stack {
     }
 
     /**
+     * 判断当前节点及下级节点是否包含指定id
+     *
+     * @param id
+     * @return
+     */
+    public boolean isContains(String id) {
+        AtomicBoolean isContains = new AtomicBoolean(false);
+        cycle(new CycleHook<Span>() {
+            @Override
+            public boolean execute(Span item, Span parent, Span root, Integer level) {
+                boolean contains = item.getId().equals(id);
+                if (contains) {
+                    isContains.set(contains);
+                    // 如果包含则退出下层循环
+                    return false;
+                }
+                return true;
+            }
+        });
+        return isContains.get();
+    }
+
+    /**
      * 从当前节点循环树
      *
      * @param hook
@@ -161,5 +183,20 @@ public class Span extends Stack {
                     .appendLines(lines, prefix + (isTail ? "    " : "│   "), true, line);
         }
     }
+
+    // for test
+//    private String id;
+//    private List<String> parentIds;
+//
+//    public String getId() {
+//        return id;
+//    }
+//
+//    public List<String> getParentIds() {
+//        if (parentIds == null) {
+//            parentIds = new ArrayList<>();
+//        }
+//        return parentIds;
+//    }
 
 }

@@ -1,5 +1,5 @@
 package com.github.izerui.support;
 
-interface ILine {
+public interface ILine {
     String getLine(Span item);
 }

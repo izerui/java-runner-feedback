@@ -1,0 +1,67 @@
+com.yj2025.storehouse.api.vo.PageSearchVo#getPageRequest(Lorg/springframework/data/domain/Sort;)Lorg/springframework/data/domain/PageRequest;
+    com.yj2025.storehouse.api.vo.query.BaseQueryVo#getPageRequest(Lorg/springframework/data/domain/Sort;)Lorg/springframework/data/domain/PageRequest;
+    com.yj2025.storehouse.api.vo.query.BaseQueryVo#call()Ljava/lang/Object;
+    com.yj2025.storehouse.api.controller.BusinessController#findTaskList(Lcom/yj2025/storehouse/api/vo/query/BaseQueryVo;)Lcom/yj2025/commons/vo/RespVO;
+    com.yj2025.storehouse.api.controller.BusinessController#call()Ljava/lang/Object;
+com.yj2025.storehouse.api.vo.query.BaseQueryVo#getPageRequest(Lorg/springframework/data/domain/Sort;)Lorg/springframework/data/domain/PageRequest;
+    com.yj2025.storehouse.api.controller.BusinessController#findTaskList(Lcom/yj2025/storehouse/api/vo/query/BaseQueryVo;)Lcom/yj2025/commons/vo/RespVO;
+    com.yj2025.storehouse.api.controller.BusinessController#call()Ljava/lang/Object;
+com.yj2025.storehouse.api.service.BusinessTaskService#getIndex(Lorg/springframework/cglib/core/Signature;)I
+    com.yj2025.storehouse.api.service.BusinessTaskService#findList(Ljava/util/Map;Lorg/springframework/data/domain/PageRequest;)Lcom/ecworking/commons/vo/PageVo;
+    com.yj2025.storehouse.api.controller.BusinessController#findTaskList(Lcom/yj2025/storehouse/api/vo/query/BaseQueryVo;)Lcom/yj2025/commons/vo/RespVO;
+    com.yj2025.storehouse.api.controller.BusinessController#call()Ljava/lang/Object;
+com.yj2025.storehouse.api.service.AbstractBaseService#structureIsSupervisorUser(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Boolean;
+    com.yj2025.storehouse.api.service.AbstractBaseService#structureQueryUserCode(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ljava/lang/String;
+    com.yj2025.storehouse.api.service.AbstractBaseService#call()Ljava/lang/Object;
+    com.yj2025.storehouse.api.service.AbstractBaseService#setDataAuth(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V
+    com.yj2025.storehouse.api.service.BusinessTaskService#setDataAuth(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V
+    com.yj2025.storehouse.api.service.BusinessTaskService#call()Ljava/lang/Object;
+    com.yj2025.storehouse.api.service.BusinessTaskService#findList(Ljava/util/Map;Lorg/springframework/data/domain/PageRequest;)Lcom/ecworking/commons/vo/PageVo;
+    com.yj2025.storehouse.api.service.BusinessTaskService#invoke(ILjava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+    com.yj2025.storehouse.api.controller.BusinessController#findTaskList(Lcom/yj2025/storehouse/api/vo/query/BaseQueryVo;)Lcom/yj2025/commons/vo/RespVO;
+    com.yj2025.storehouse.api.controller.BusinessController#call()Ljava/lang/Object;
+com.yj2025.storehouse.api.service.AbstractBaseService#structureQueryUserCode(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ljava/lang/String;
+    com.yj2025.storehouse.api.service.AbstractBaseService#setDataAuth(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V
+    com.yj2025.storehouse.api.service.AbstractBaseService#call()Ljava/lang/Object;
+    com.yj2025.storehouse.api.service.BusinessTaskService#setDataAuth(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V
+    com.yj2025.storehouse.api.service.BusinessTaskService#call()Ljava/lang/Object;
+    com.yj2025.storehouse.api.service.BusinessTaskService#findList(Ljava/util/Map;Lorg/springframework/data/domain/PageRequest;)Lcom/ecworking/commons/vo/PageVo;
+    com.yj2025.storehouse.api.service.BusinessTaskService#invoke(ILjava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+    com.yj2025.storehouse.api.controller.BusinessController#findTaskList(Lcom/yj2025/storehouse/api/vo/query/BaseQueryVo;)Lcom/yj2025/commons/vo/RespVO;
+    com.yj2025.storehouse.api.controller.BusinessController#call()Ljava/lang/Object;
+com.yj2025.storehouse.api.service.AbstractBaseService#setDataAuth(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V
+    com.yj2025.storehouse.api.service.BusinessTaskService#setDataAuth(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V
+    com.yj2025.storehouse.api.service.BusinessTaskService#call()Ljava/lang/Object;
+    com.yj2025.storehouse.api.service.BusinessTaskService#findList(Ljava/util/Map;Lorg/springframework/data/domain/PageRequest;)Lcom/ecworking/commons/vo/PageVo;
+    com.yj2025.storehouse.api.service.BusinessTaskService#invoke(ILjava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+    com.yj2025.storehouse.api.controller.BusinessController#findTaskList(Lcom/yj2025/storehouse/api/vo/query/BaseQueryVo;)Lcom/yj2025/commons/vo/RespVO;
+    com.yj2025.storehouse.api.controller.BusinessController#call()Ljava/lang/Object;
+com.yj2025.storehouse.api.service.BusinessTaskService#setDataAuth(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V
+    com.yj2025.storehouse.api.service.BusinessTaskService#findList(Ljava/util/Map;Lorg/springframework/data/domain/PageRequest;)Lcom/ecworking/commons/vo/PageVo;
+    com.yj2025.storehouse.api.service.BusinessTaskService#call()Ljava/lang/Object;
+    com.yj2025.storehouse.api.service.BusinessTaskService#invoke(ILjava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+    com.yj2025.storehouse.api.controller.BusinessController#findTaskList(Lcom/yj2025/storehouse/api/vo/query/BaseQueryVo;)Lcom/yj2025/commons/vo/RespVO;
+    com.yj2025.storehouse.api.controller.BusinessController#call()Ljava/lang/Object;
+com.yj2025.storehouse.api.service.BusinessTaskService#getSaleOrderDispatchVoMap(Ljava/lang/String;Ljava/util/List;)Ljava/util/Map;
+    com.yj2025.storehouse.api.service.BusinessTaskService#findList(Ljava/util/Map;Lorg/springframework/data/domain/PageRequest;)Lcom/ecworking/commons/vo/PageVo;
+    com.yj2025.storehouse.api.service.BusinessTaskService#call()Ljava/lang/Object;
+    com.yj2025.storehouse.api.service.BusinessTaskService#invoke(ILjava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+    com.yj2025.storehouse.api.controller.BusinessController#findTaskList(Lcom/yj2025/storehouse/api/vo/query/BaseQueryVo;)Lcom/yj2025/commons/vo/RespVO;
+    com.yj2025.storehouse.api.controller.BusinessController#call()Ljava/lang/Object;
+com.yj2025.storehouse.api.service.BusinessTaskService#getBusinessTaskVoPageVo(Ljava/lang/String;Ljava/util/Map;ZZLorg/springframework/data/domain/Page;Ljava/util/Map;)Lcom/ecworking/commons/vo/PageVo;
+    com.yj2025.storehouse.api.service.BusinessTaskService#findList(Ljava/util/Map;Lorg/springframework/data/domain/PageRequest;)Lcom/ecworking/commons/vo/PageVo;
+    com.yj2025.storehouse.api.service.BusinessTaskService#call()Ljava/lang/Object;
+    com.yj2025.storehouse.api.service.BusinessTaskService#invoke(ILjava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+    com.yj2025.storehouse.api.controller.BusinessController#findTaskList(Lcom/yj2025/storehouse/api/vo/query/BaseQueryVo;)Lcom/yj2025/commons/vo/RespVO;
+    com.yj2025.storehouse.api.controller.BusinessController#call()Ljava/lang/Object;
+com.yj2025.storehouse.api.service.BusinessTaskService#findList(Ljava/util/Map;Lorg/springframework/data/domain/PageRequest;)Lcom/ecworking/commons/vo/PageVo;
+    com.yj2025.storehouse.api.service.BusinessTaskService#invoke(ILjava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+    com.yj2025.storehouse.api.service.BusinessTaskService#call()Ljava/lang/Object;
+    com.yj2025.storehouse.api.service.BusinessTaskService#findList(Ljava/util/Map;Lorg/springframework/data/domain/PageRequest;)Lcom/ecworking/commons/vo/PageVo;
+    com.yj2025.storehouse.api.controller.BusinessController#findTaskList(Lcom/yj2025/storehouse/api/vo/query/BaseQueryVo;)Lcom/yj2025/commons/vo/RespVO;
+    com.yj2025.storehouse.api.controller.BusinessController#call()Ljava/lang/Object;
+com.yj2025.storehouse.api.service.BusinessTaskService#invoke(ILjava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+    com.yj2025.storehouse.api.service.BusinessTaskService#findList(Ljava/util/Map;Lorg/springframework/data/domain/PageRequest;)Lcom/ecworking/commons/vo/PageVo;
+    com.yj2025.storehouse.api.controller.BusinessController#findTaskList(Lcom/yj2025/storehouse/api/vo/query/BaseQueryVo;)Lcom/yj2025/commons/vo/RespVO;
+    com.yj2025.storehouse.api.controller.BusinessController#call()Ljava/lang/Object;
+com.yj2025.storehouse.api.controller.BusinessController#findTaskList(Lcom/yj2025/storehouse/api/vo/query/BaseQueryVo;)Lcom/yj2025/commons/vo/RespVO;
