@@ -3,7 +3,6 @@ package com.github.sample.service.impl;
 import com.github.sample.dao.SampleDao;
 import com.github.sample.service.SampleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,14 +12,14 @@ public class SampleServiceImpl implements SampleService {
     private SampleDao sampleDao;
 
     @Override
-    public String getUserName(String user) {
-        return sampleDao.getName2(user);
+    public String getUserName_0_2(String user) {
+        return sampleDao.getName_0_2_3(user);
     }
 
     @Override
-    public void writeName(String user, boolean admin) {
+    public void writeName_0_1(String user, boolean admin) {
         for (int i = 0; i < 5; i++) {
-            sampleDao.getVoid(user, admin);
+            sampleDao.getVoid_0_1_2(user, admin);
         }
     }
 }

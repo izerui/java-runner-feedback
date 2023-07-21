@@ -13,11 +13,6 @@ public final class Context {
     public final static int ASM_VERSION = Opcodes.ASM9;
 
     /**
-     * 是否输出非扫描路径的类的调用日志
-     */
-    public static boolean DEEP_SHOW = true;
-
-    /**
      * 扫描记录包含的包名下的类
      */
     public final static String[] PACKAGES;
@@ -50,10 +45,6 @@ public final class Context {
         } else {
             System.out.println("未获取到正确的可【feedback】的包匹配字符串, 请正确配置agent类似: -javaagent:~/runner-feedback-agent.jar -Dfeedback.packages=com.github.sample,com.yj2025");
             PACKAGES = new String[0];
-        }
-        Object deepshow = properties.get("feedback.deepshow");
-        if (deepshow != null) {
-            DEEP_SHOW = Boolean.valueOf(String.valueOf(properties.get("feedback.deepshow")));
         }
         Object debugger = properties.get("feedback.debugger");
         if (debugger != null) {

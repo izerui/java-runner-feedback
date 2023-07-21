@@ -1,29 +1,37 @@
 package com.github.izerui.support;
 
-import com.github.izerui.context.Context;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NonNull;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * trace跟踪中的一个跨度记录
  */
 @Data
 @Builder
-public class Span {
+public class Span extends Stack {
 
+    // 当前方法调用的帧
+    @NonNull
+    protected List<StackWalker.StackFrame> stackFrames;
+    // 被拦截的目标对象
+    protected Object target;
+    // 当前方法
+    protected Method method;
+    // 入参
+    protected Object[] argumengts;
     // 是否是第一个请求入口
     protected boolean rootInComming;
     // 跟踪id
     protected String traceId;
     // 是否成功调用
     protected boolean success;
-    // 文件名
-    protected String fileName;
     // 调用次数
     protected int count;
     // 耗时
@@ -32,18 +40,6 @@ public class Span {
     protected String threadName;
     // 方法所属行号
     protected int methodLine;
-    // 当前类名
-    protected String currentClassName;
-    // 当前方法
-    protected String currentMethodName;
-    // 当前方法的JNI描述符 参看: https://docs.oracle.com/javase/7/docs/technotes/guides/jni/spec/types.html#wp16432
-    protected String currentMethodDescriptor;
-    // 外部调用者
-    protected String parentClassName;
-    // 外部调用者方法名
-    protected String parentMethodName;
-    // 外部调用者方法描述符
-    protected String parentMethodDescriptor;
     // 只是一个标记, 用法一: 表示是否增加到树中
     protected transient Integer mark;
     // 子集span
@@ -57,30 +53,41 @@ public class Span {
     }
 
     /**
-     * 类的调用key 组成方式为: String.format("%s#%s%s", className, methodName, descriptor)
-     * 当前执行类+方法+描述符的标识key
-     *
+     * 获取方法声明所在的类
      * @return
      */
-    public String getKey() {
-        return currentClassName + "#" + currentMethodName + currentMethodDescriptor;
+    public String getDeclaringClassName() {
+        return method.getDeclaringClass().getName();
     }
 
     /**
-     * 外部调用者类+方法+描述符的标识key
+     * 获取执行方法名
      *
      * @return
      */
-    public String getParentKey() {
-        return parentClassName + "#" + parentMethodName + parentMethodDescriptor;
+    public String getMethodName() {
+        String methodName = super.getMethodName();
+        String currentMethodName = method.getName();
+        Assert.that(Objects.equals(methodName, currentMethodName), String.format("getMethodName 帧中 %s 与 %s 不一致", methodName, currentMethodName));
+        return methodName;
     }
 
     /**
      * 获取当前类的包名
+     *
      * @return
      */
-    public String getCurrentPackage() {
-        String className = getCurrentClassName();
+    public String getPackage() {
+        String className = getClassName();
+        return className.substring(0, className.lastIndexOf("."));
+    }
+
+    /**
+     * 获取方法声明所在的类的包名
+     * @return
+     */
+    public String getDeclaringPackage() {
+        String className = getDeclaringClassName();
         return className.substring(0, className.lastIndexOf("."));
     }
 

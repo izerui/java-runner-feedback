@@ -1,7 +1,5 @@
 package com.github.sample.service;
 
-import org.springframework.scheduling.annotation.Async;
-
 public interface SampleService {
 
     /**
@@ -9,12 +7,12 @@ public interface SampleService {
      * @param user
      * @return
      */
-    String getUserName(String user);
+    String getUserName_0_2(String user);
 
     /**
      * 写入方法
      * @param user
      * @param admin
      */
-    void writeName(String user, boolean admin);
+    void writeName_0_1(String user, boolean admin);
 }

@@ -64,10 +64,9 @@ public class LoggerInterceptor {
         } finally {
             try {
                 long end = System.currentTimeMillis();
-                List<StackWalker.StackFrame> stackFrames = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(stackFrameStream -> stackFrameStream.collect(Collectors.toList()));
-                StackWalker.StackFrame currentStackFrame = stackFrames.get(1);
-                // 外部对象调用者
-                StackWalker.StackFrame parentStackFrame = Context.getInComingStackFrame(stackFrames);
+                List<StackWalker.StackFrame> stackFrames = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
+                        .walk(stackFrameStream -> stackFrameStream.skip(1).collect(Collectors.toList()));
+                StackWalker.StackFrame currentStackFrame = stackFrames.get(0);
                 // 当tracer存在，则后续跨度及子线程都需要拦截记录
                 com.github.izerui.support.Tracer tracer = TracerContext.getTracer();
                 if (tracer != null) {
@@ -75,19 +74,16 @@ public class LoggerInterceptor {
                     // 当能获取到本地类路径的方法行号则记录， 或者deepshow参数为true表示指定包下对象的父类方法也记录
 //                    System.out.println("拦截: " + method.getDeclaringClass().getName() + "#" + method.getName());
                     tracer.addSpan(Span.builder()
+                            .target(target)
+                            .method(method)
+                            .stackFrames(stackFrames)
+                            .argumengts(argumengts)
                             .rootInComming(rootInComming)
                             .success(success)
-                            .fileName(currentStackFrame.getFileName())
                             .count(1)
                             .time(end - start)
                             .threadName(Thread.currentThread().getName())
                             .methodLine(methodLine == -1 ? currentStackFrame.getLineNumber() : methodLine)
-                            .currentClassName(Context.getOriginName(currentStackFrame.getClassName(), "$$"))
-                            .currentMethodName(Context.getOriginName(currentStackFrame.getMethodName(), "$"))
-                            .currentMethodDescriptor(currentStackFrame.getDescriptor())
-                            .parentClassName(Context.getOriginName(parentStackFrame.getClassName(), "$$"))
-                            .parentMethodName(Context.getOriginName(parentStackFrame.getMethodName(), "$"))
-                            .parentMethodDescriptor(parentStackFrame.getDescriptor())
                             .children(new ArrayList<>())
                             .build());
                     if (rootInComming) {
@@ -96,8 +92,10 @@ public class LoggerInterceptor {
                             System.out.println("=================================================");
                             List<Span> spans = tracer.getSpans();
                             for (Span span : spans) {
-                                System.out.println(span.getKey());
-                                System.out.println(span.getParentKey());
+                                System.out.println(span.getId());
+                                for (String parentId : span.getParentIds()) {
+                                    System.out.println("    " + parentId);
+                                }
                                 System.out.println();
                             }
                             System.out.println("=================================================");
