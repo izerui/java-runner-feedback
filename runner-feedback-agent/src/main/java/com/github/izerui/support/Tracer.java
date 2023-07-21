@@ -36,7 +36,7 @@ public class Tracer {
             spans = new ArrayList<>();
         }
         span.traceId = this.getId();
-        Optional<Span> first = spans.stream().filter(sp -> sp.getKey().equals(span.getKey()) && sp.getParentKey().equals(span.getParentKey())).findFirst();
+        Optional<Span> first = spans.stream().filter(sp -> sp.getId().equals(span.getId())).findFirst();
         if (first.isPresent()) {
             first.get().count++;
             first.get().time += span.time;
@@ -60,15 +60,15 @@ public class Tracer {
                     // 调用次数
                     AnsiOutput.toString(AnsiColor.YELLOW, item.count > 1 ? "[" + item.count + "]" : ""),
                     // 包名
-                    item.getCurrentPackage(),
+                    item.getDeclaringPackage(),
                     // 文件名
-                    item.fileName,
+                    item.getFileName(),
                     // 行号
-                    item.methodLine,
+                    item.getLine(),
                     // 方法
-                    AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, item.currentMethodName),
+                    AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, item.getMethodName()),
                     // 方法描述符
-                    AnsiOutput.toString(AnsiColor.BRIGHT_GREEN, item.currentMethodDescriptor),
+                    AnsiOutput.toString(AnsiColor.BRIGHT_GREEN, item.getDescriptor()),
                     // 线程名
                     item.threadName));
         }
@@ -81,17 +81,49 @@ public class Tracer {
      * @return
      */
     public List<Span> getTreeSpans() {
-        for (Span parent : spans) {
-            for (Span child : spans) {
-                if (!parent.getKey().equals(parent.getParentKey())
-                        && parent.getKey().equals(child.getParentKey())) {
-                    parent.getChildren().add(child);
-                    child.setMark(1);
+        if (Context.DEBUGGER) {
+            for (Span span : spans) {
+                System.out.println(span.getId());
+                for (String parentId : span.getParentIds()) {
+                    System.out.println("    " + parentId);
+                }
+            }
+        }
+
+//        TreeMapper<Span,Span> treeMapper = new TreeMapper<Span, Span>() {
+//            @Override
+//            protected boolean isRoot(Span item) {
+//                return item.isRootInComming();
+//            }
+//
+//            @Override
+//            protected boolean isParent(Span child, Span parent) {
+//                return Objects.equals(child.getParentId(), parent.getId());
+//            }
+//
+//            @Override
+//            protected Span map(Span item, Span parent) {
+//                return item;
+//            }
+//
+//            @Override
+//            protected void addChild(Span child, Span parent) {
+//                parent.getChildren().add(child);
+//            }
+//        };
+//        return treeMapper.treeMap(spans);
+
+        for (Span span : spans) {
+            for (String parentId : span.getParentIds()) {
+                Optional<Span> first = spans.stream().filter(sp -> sp.getId().equals(parentId)).findFirst();
+                if (first.isPresent()) {
+                    first.get().getChildren().add(span);
+                    span.setMark(1);
+                    break;
                 }
             }
         }
         List<Span> collect = spans.stream().filter(span -> span.mark == null).collect(Collectors.toList());
-        Collections.reverse(collect);
         return collect;
     }
 
