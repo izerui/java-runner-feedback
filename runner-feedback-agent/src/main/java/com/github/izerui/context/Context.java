@@ -23,14 +23,14 @@ public final class Context {
     public static boolean DEBUGGER = false;
 
     /**
-     * 是否记录get方法
+     * 是否拦截并显示get方法
      */
-    public static boolean GETTER = false;
+    public static boolean SHOW_GETTER = false;
 
     /**
-     * 是否记录set方法
+     * 是否拦截并显示set方法
      */
-    public static boolean SETTER = false;
+    public static boolean SHOW_SETTER = false;
 
     /**
      * 忽略指定包名下的类
@@ -56,8 +56,8 @@ public final class Context {
             PACKAGES = new String[0];
         }
         DEBUGGER = getBoolProperty("feedback.debugger", DEBUGGER);
-        GETTER = getBoolProperty("feedback.getter", GETTER);
-        SETTER = getBoolProperty("feedback.setter", SETTER);
+        SHOW_GETTER = getBoolProperty("feedback.getter", SHOW_GETTER);
+        SHOW_SETTER = getBoolProperty("feedback.setter", SHOW_SETTER);
     }
 
     private static String getStringProperty(String key, String defaultValue) {
