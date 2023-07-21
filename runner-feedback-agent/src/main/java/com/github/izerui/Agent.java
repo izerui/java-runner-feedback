@@ -26,10 +26,10 @@ public class Agent {
         Arrays.stream(PREMAIN_AGENTS).forEach(premainAgent -> premainAgent.premain(args, instrumentation));
         System.out.println("☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟");
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, "插桩: runner-feedback-agent 成功!"));
-        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, "feedback.packages: " + Arrays.toString(Context.PACKAGES)));
-        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, "feedback.debugger: " + Context.DEBUGGER));
-        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, "feedback.getter: " + Context.GETTER));
-        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, "feedback.setter: " + Context.SETTER));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, "[feedback.packages](拦截包名,多个逗号分隔): " + Arrays.toString(Context.PACKAGES)));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, "[feedback.debugger](是否输出调试信息): " + Context.DEBUGGER));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, "[feedback.getter](是否拦截get方法): " + Context.GETTER));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, "[feedback.setter](是否拦截set方法): " + Context.SETTER));
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, "使用@Tracer('标记方法')就可以拦截调用链并输出树状结构!"));
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, "开始愉快的玩耍吧!!!"));
         System.out.println("☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝");
