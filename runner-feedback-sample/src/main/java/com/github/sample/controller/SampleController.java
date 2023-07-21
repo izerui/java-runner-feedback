@@ -21,9 +21,11 @@ public class SampleController {
     @Tracer("testPost")
     @GetMapping("/")
     public String testPost() throws Exception {
-        sampleService.writeName(UUID.randomUUID().toString(), true);
-        String home = baiduClient.getHome();
-        System.out.println(home);
+        for (int i = 0; i < 10; i++) {
+            sampleService.writeName(UUID.randomUUID().toString(), true);
+        }
+//        String home = baiduClient.getHome();
+//        System.out.println(home);
         return sampleService.getUserName(UUID.randomUUID().toString());
     }
 }

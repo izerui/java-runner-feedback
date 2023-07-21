@@ -8,7 +8,6 @@ import com.github.izerui.support.Span;
 import net.bytebuddy.implementation.bind.annotation.*;
 
 import java.lang.reflect.Method;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -68,47 +67,42 @@ public class LoggerInterceptor {
                 List<StackWalker.StackFrame> stackFrames = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(stackFrameStream -> stackFrameStream.collect(Collectors.toList()));
                 StackWalker.StackFrame currentStackFrame = stackFrames.get(1);
                 // 外部对象调用者
-                StackWalker.StackFrame inComingStackFrame = Context.getInComingStackFrame(stackFrames);
+                StackWalker.StackFrame parentStackFrame = Context.getInComingStackFrame(stackFrames);
                 // 当tracer存在，则后续跨度及子线程都需要拦截记录
                 com.github.izerui.support.Tracer tracer = TracerContext.getTracer();
                 if (tracer != null) {
                     int methodLine = MethodContext.getLine(method.getDeclaringClass().getName(), method.getName(), currentStackFrame.getDescriptor());
                     // 当能获取到本地类路径的方法行号则记录， 或者deepshow参数为true表示指定包下对象的父类方法也记录
-                    if (methodLine != -1 || Context.DEEP_SHOW) {
-                        tracer.addSpan(Span.builder()
-                                .rootInComming(rootInComming)
-                                .success(success)
-                                .targetClass(target.getClass())
-                                .declaringClass(method.getDeclaringClass())
-                                .fileName(currentStackFrame.getFileName())
-                                .descriptor(currentStackFrame.getDescriptor())
-                                .start(start)
-                                .end(end)
-                                .threadName(Thread.currentThread().getName())
-                                .method(method)
-                                .methodLine(methodLine)
-                                .currentClassName(currentStackFrame.getClassName())
-                                .currentMethodName(currentStackFrame.getMethodName())
-                                .currentMethodDescriptor(currentStackFrame.getDescriptor())
-                                .inComingClassName(inComingStackFrame.getClassName())
-                                .inComingMethodName(inComingStackFrame.getMethodName())
-                                .inComingMethodDescriptor(inComingStackFrame.getDescriptor())
-                                .children(new ArrayList<>())
-                                .build());
-                    }
+//                    System.out.println("拦截: " + method.getDeclaringClass().getName() + "#" + method.getName());
+                    tracer.addSpan(Span.builder()
+                            .rootInComming(rootInComming)
+                            .success(success)
+                            .fileName(currentStackFrame.getFileName())
+                            .count(1)
+                            .time(end - start)
+                            .threadName(Thread.currentThread().getName())
+                            .methodLine(methodLine == -1 ? currentStackFrame.getLineNumber() : methodLine)
+                            .currentClassName(Context.getOriginName(currentStackFrame.getClassName(), "$$"))
+                            .currentMethodName(Context.getOriginName(currentStackFrame.getMethodName(), "$"))
+                            .currentMethodDescriptor(currentStackFrame.getDescriptor())
+                            .parentClassName(Context.getOriginName(parentStackFrame.getClassName(), "$$"))
+                            .parentMethodName(Context.getOriginName(parentStackFrame.getMethodName(), "$"))
+                            .parentMethodDescriptor(parentStackFrame.getDescriptor())
+                            .children(new ArrayList<>())
+                            .build());
                     if (rootInComming) {
                         tracer.setEnd(end);
                         if (Context.DEBUGGER) {
                             System.out.println("=================================================");
                             List<Span> spans = tracer.getSpans();
                             for (Span span : spans) {
-                                System.out.println(span.getComingKey());
-                                System.out.println(span.getParentComingKey());
+                                System.out.println(span.getKey());
+                                System.out.println(span.getParentKey());
                                 System.out.println();
                             }
                             System.out.println("=================================================");
                         }
-                        tracer.print(tracer.getTreeSpans());
+                        tracer.print();
                     }
                 }
             } catch (Exception ex) {

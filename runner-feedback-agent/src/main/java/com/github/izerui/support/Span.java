@@ -20,22 +20,14 @@ public class Span {
     protected boolean rootInComming;
     // 跟踪id
     protected String traceId;
-    // 当前对象持有者所属类
-    protected Class declaringClass;
-    // 当前对象执行的方法所属类
-    protected Class targetClass;
     // 是否成功调用
     protected boolean success;
     // 文件名
     protected String fileName;
-    // 方法
-    protected Method method;
-    // 方法的JNI描述符 参看: https://docs.oracle.com/javase/7/docs/technotes/guides/jni/spec/types.html#wp16432
-    protected String descriptor;
-    // 开始时间戳
-    protected long start;
-    // 完成时间戳
-    protected long end;
+    // 调用次数
+    protected int count;
+    // 耗时
+    protected long time;
     // 线程名
     protected String threadName;
     // 方法所属行号
@@ -44,14 +36,14 @@ public class Span {
     protected String currentClassName;
     // 当前方法
     protected String currentMethodName;
-    // 当前调用者方法描述符
+    // 当前方法的JNI描述符 参看: https://docs.oracle.com/javase/7/docs/technotes/guides/jni/spec/types.html#wp16432
     protected String currentMethodDescriptor;
     // 外部调用者
-    protected String inComingClassName;
+    protected String parentClassName;
     // 外部调用者方法名
-    protected String inComingMethodName;
+    protected String parentMethodName;
     // 外部调用者方法描述符
-    protected String inComingMethodDescriptor;
+    protected String parentMethodDescriptor;
     // 只是一个标记, 用法一: 表示是否增加到树中
     protected transient Integer mark;
     // 子集span
@@ -65,15 +57,13 @@ public class Span {
     }
 
     /**
+     * 类的调用key 组成方式为: String.format("%s#%s%s", className, methodName, descriptor)
      * 当前执行类+方法+描述符的标识key
      *
      * @return
      */
-    public String getComingKey() {
-        String cClassName = Context.getOriginName(currentClassName, "$$");
-        String cMethodName = Context.getOriginName(currentMethodName, "$");
-        String cDescriptor = currentMethodDescriptor;
-        return cClassName + "#" + cMethodName + cDescriptor;
+    public String getKey() {
+        return currentClassName + "#" + currentMethodName + currentMethodDescriptor;
     }
 
     /**
@@ -81,11 +71,17 @@ public class Span {
      *
      * @return
      */
-    public String getParentComingKey() {
-        String parentComingClassName = Context.getOriginName(inComingClassName, "$$");
-        String parentComingMethodName = Context.getOriginName(inComingMethodName, "$");
-        String parentDescriptor = inComingMethodDescriptor;
-        return parentComingClassName + "#" + parentComingMethodName + parentDescriptor;
+    public String getParentKey() {
+        return parentClassName + "#" + parentMethodName + parentMethodDescriptor;
+    }
+
+    /**
+     * 获取当前类的包名
+     * @return
+     */
+    public String getCurrentPackage() {
+        String className = getCurrentClassName();
+        return className.substring(0, className.lastIndexOf("."));
     }
 
     /**

@@ -17,9 +17,10 @@ public class SampleServiceImpl implements SampleService {
         return sampleDao.getName2(user);
     }
 
-    @Async
     @Override
     public void writeName(String user, boolean admin) {
-        sampleDao.getVoid(user, admin);
+        for (int i = 0; i < 5; i++) {
+            sampleDao.getVoid(user, admin);
+        }
     }
 }
