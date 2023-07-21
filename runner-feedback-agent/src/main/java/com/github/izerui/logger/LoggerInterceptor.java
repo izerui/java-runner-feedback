@@ -88,18 +88,6 @@ public class LoggerInterceptor {
                             .build());
                     if (rootInComming) {
                         tracer.setEnd(end);
-                        if (Context.DEBUGGER) {
-                            System.out.println("=================================================");
-                            List<Span> spans = tracer.getSpans();
-                            for (Span span : spans) {
-                                System.out.println(span.getId());
-                                for (String parentId : span.getParentIds()) {
-                                    System.out.println("    " + parentId);
-                                }
-                                System.out.println();
-                            }
-                            System.out.println("=================================================");
-                        }
                         tracer.print();
                     }
                 }

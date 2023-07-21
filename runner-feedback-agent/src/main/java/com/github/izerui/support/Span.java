@@ -54,6 +54,7 @@ public class Span extends Stack {
 
     /**
      * 获取方法声明所在的类
+     *
      * @return
      */
     public String getDeclaringClassName() {
@@ -84,6 +85,7 @@ public class Span extends Stack {
 
     /**
      * 获取方法声明所在的类的包名
+     *
      * @return
      */
     public String getDeclaringPackage() {
