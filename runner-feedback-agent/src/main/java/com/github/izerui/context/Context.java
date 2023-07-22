@@ -1,14 +1,21 @@
 package com.github.izerui.context;
 
+import com.github.izerui.ansi.AnsiColor;
 import com.github.izerui.ansi.AnsiOutput;
 import org.objectweb.asm.Opcodes;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
 public final class Context {
+
+    /**
+     * 每行输出格式
+     */
+    public static String OUTPUT_FORMAT = "${success} ${time}${count}  ${package}(${file}:${line})#${method}${descriptor} 【${thread}】";
 
     public final static int ASM_VERSION = Opcodes.ASM9;
 
@@ -55,9 +62,23 @@ public final class Context {
             System.out.println("未获取到正确的可【feedback】的包匹配字符串, 请正确配置agent类似: -javaagent:~/runner-feedback-agent.jar -Dfeedback.packages=com.github.sample,com.yj2025");
             PACKAGES = new String[0];
         }
+        OUTPUT_FORMAT = getStringProperty("feedback.output-format", OUTPUT_FORMAT);
         DEBUGGER = getBoolProperty("feedback.debugger", DEBUGGER);
-        SHOW_GETTER = getBoolProperty("feedback.getter", SHOW_GETTER);
-        SHOW_SETTER = getBoolProperty("feedback.setter", SHOW_SETTER);
+        SHOW_GETTER = getBoolProperty("feedback.show-getter", SHOW_GETTER);
+        SHOW_SETTER = getBoolProperty("feedback.show-setter", SHOW_SETTER);
+    }
+
+    public static void printAfterAgent() {
+        System.out.println("☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟");
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "插桩: runner-feedback-agent 成功!"));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.packages](拦截包名,多个逗号分隔): " + Arrays.toString(Context.PACKAGES)));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.debugger](是否输出调试信息): " + Context.DEBUGGER));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.show-getter](是否拦截并显示get方法): " + Context.SHOW_GETTER));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.show-setter](是否拦截并显示set方法): " + Context.SHOW_SETTER));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.output-format](每行输出格式): " + Context.OUTPUT_FORMAT));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "使用@Tracer('标记方法')就可以拦截调用链并输出树状结构!"));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "开始愉快的玩耍吧!!!"));
+        System.out.println("☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝");
     }
 
     private static String getStringProperty(String key, String defaultValue) {

@@ -5,11 +5,9 @@ import com.github.izerui.ansi.AnsiOutput;
 import com.github.izerui.context.Context;
 import lombok.Builder;
 import lombok.Data;
+import org.apache.commons.text.StringSubstitutor;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -55,25 +53,7 @@ public class Tracer {
         System.out.println("☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟");
         System.out.println(AnsiOutput.toString(AnsiColor.GREEN, String.format("【start:%s name:%s traceId:%s time:%s】", Context.DATE_TIME_FORMATTER.format(new Date(start)), name, id, (end - start) + "ms")));
         for (Span span : getTreeSpans()) {
-            span.printTree(item -> String.format("%s %s%s  %s(%s:%s)#%s %s 【%s】",
-                    // 是否成功
-                    item.success ? AnsiOutput.toString(AnsiColor.GREEN, "[T]") : AnsiOutput.toString(AnsiColor.RED, "[F]"),
-                    // 耗时
-                    AnsiOutput.toString(AnsiColor.YELLOW, item.time + "ms"),
-                    // 调用次数
-                    AnsiOutput.toString(AnsiColor.YELLOW, item.count > 1 ? "[" + item.count + "]" : ""),
-                    // 包名
-                    item.getDeclaringPackage(),
-                    // 文件名
-                    item.getFileName(),
-                    // 行号
-                    item.getLine(),
-                    // 方法
-                    AnsiOutput.toString(AnsiColor.BRIGHT_MAGENTA, item.getMethodName()),
-                    // 方法描述符
-                    AnsiOutput.toString(AnsiColor.BRIGHT_GREEN, item.getDescriptor()),
-                    // 线程名
-                    item.threadName));
+            span.printTree(item -> item.getSubstitutorStr(Context.OUTPUT_FORMAT));
         }
         System.out.println("☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝");
     }

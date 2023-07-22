@@ -1,13 +1,13 @@
 package com.github.izerui.support;
 
+import com.github.izerui.ansi.AnsiColor;
+import com.github.izerui.ansi.AnsiOutput;
 import lombok.Builder;
 import lombok.Data;
+import org.apache.commons.text.StringSubstitutor;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -182,6 +182,36 @@ public class Span extends Stack {
             this.children.get(this.children.size() - 1)
                     .appendLines(lines, prefix + (isTail ? "    " : "│   "), true, line);
         }
+    }
+
+    /**
+     * 根据Substitutor模版进行替换
+     *
+     * @param templateStr 模版
+     * @return 替换后的字符串
+     */
+    public String getSubstitutorStr(String templateStr) {
+        Map<String, Object> variables = new HashMap<>();
+        // 是否成功
+        variables.put("success", this.success ? AnsiOutput.toString(AnsiColor.GREEN, "[T]") : AnsiOutput.toString(AnsiColor.RED, "[F]"));
+        // 耗时
+        variables.put("time", AnsiOutput.toString(AnsiColor.YELLOW, this.time + "ms"));
+        // 调用次数
+        variables.put("count", AnsiOutput.toString(AnsiColor.YELLOW, this.count > 1 ? "[" + this.count + "]" : ""));
+        // 包名
+        variables.put("package", AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, this.getDeclaringPackage()));
+        // 文件名
+        variables.put("file", this.getFileName());
+        // 行号
+        variables.put("line", this.getLine());
+        // 方法
+        variables.put("method", this.getMethodName());
+        // 方法描述符
+        variables.put("descriptor", AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, this.getDescriptor()));
+        // 线程名
+        variables.put("thread", this.threadName);
+        StringSubstitutor substitutor = new StringSubstitutor(variables);
+        return substitutor.replace(templateStr);
     }
 
     // for test
