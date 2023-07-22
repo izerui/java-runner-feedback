@@ -195,9 +195,9 @@ public class Span extends Stack {
         // 是否成功
         variables.put("success", this.success ? AnsiOutput.toString(AnsiColor.GREEN, "[T]") : AnsiOutput.toString(AnsiColor.RED, "[F]"));
         // 耗时
-        variables.put("time", AnsiOutput.toString(AnsiColor.YELLOW, this.time + "ms"));
+        variables.put("time", this.time + "ms");
         // 调用次数
-        variables.put("count", AnsiOutput.toString(AnsiColor.YELLOW, this.count > 1 ? "[" + this.count + "]" : ""));
+        variables.put("count", AnsiOutput.toString(AnsiColor.RED, this.count > 1 ? "[" + this.count + "]" : ""));
         // 包名
         variables.put("package", AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, this.getDeclaringPackage()));
         // 文件名
@@ -205,7 +205,7 @@ public class Span extends Stack {
         // 行号
         variables.put("line", this.getLine());
         // 方法
-        variables.put("method", this.getMethodName());
+        variables.put("method", AnsiOutput.toString(AnsiColor.YELLOW, this.getMethodName()));
         // 方法描述符
         variables.put("descriptor", AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, this.getDescriptor()));
         // 线程名

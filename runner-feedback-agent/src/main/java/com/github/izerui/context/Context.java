@@ -15,7 +15,7 @@ public final class Context {
     /**
      * 每行输出格式
      */
-    public static String OUTPUT_FORMAT = "${success} ${time}${count}  ${package}(${file}:${line})#${method}${descriptor} 【${thread}】";
+    public static String OUTPUT_FORMAT = "${success} ${time}${count}  ${package}(${file}:${line})${method}${descriptor} 【${thread}】";
 
     public final static int ASM_VERSION = Opcodes.ASM9;
 
