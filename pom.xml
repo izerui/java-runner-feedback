@@ -20,6 +20,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>nexus</id>
+            <url>http://192.168.1.235:8081/nexus/content/groups/public/</url>
+        </repository>
+    </repositories>
+
     <distributionManagement>
         <repository>
             <id>releases</id>
