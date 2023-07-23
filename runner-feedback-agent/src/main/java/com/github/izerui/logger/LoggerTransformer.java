@@ -15,6 +15,7 @@ import java.lang.annotation.Annotation;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.security.ProtectionDomain;
+import java.sql.Statement;
 
 public class LoggerTransformer implements ClassFileTransformer, PremainAgent, AgentBuilder.Transformer {
 
@@ -34,15 +35,21 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
 
     private ElementMatcher<? super TypeDescription> getTypeMatcher() {
         ElementMatcher.Junction<? super TypeDescription> matcher = ElementMatchers.any();
+        // 排除忽略的包
         for (String ignorePackage : Context.IGNORE_PACKAGES) {
             matcher = matcher.and(ElementMatchers.not(ElementMatchers.nameStartsWith(ignorePackage)));
         }
+        // 排除接口
         matcher = matcher.and(ElementMatchers.not(ElementMatchers.isInterface()));
+        // 排除包含指定注解的类
         matcher = withOutAnnotation(matcher, Context.IGNORE_ANNOTATIONS);
+
         ElementMatcher.Junction<? super TypeDescription> orMatcher = ElementMatchers.none();
+        // 或包含包名
         for (String aPackage : Context.PACKAGES) {
             orMatcher = orMatcher.or(ElementMatchers.nameStartsWith(aPackage));
         }
+
         matcher = matcher.and(orMatcher);
         return matcher;
     }

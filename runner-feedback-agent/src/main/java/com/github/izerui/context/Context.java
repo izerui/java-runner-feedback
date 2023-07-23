@@ -6,7 +6,6 @@ import org.objectweb.asm.Opcodes;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -161,27 +160,6 @@ public final class Context {
             shortBuffer.append(TRACE_CHARS[x % 0x3E]);
         }
         return shortBuffer.toString();
-    }
-
-
-    /**
-     * 找到外部调用者(inComing)
-     *
-     * @param stackFrames
-     * @return
-     */
-    public static StackWalker.StackFrame getInComingStackFrame(List<StackWalker.StackFrame> stackFrames) {
-        // 0 为当前拦截器
-        // 1 为当前调用者
-        // 2 为外部调用者(可能), 不过需要通过扫描的包路径循环查找最合适的外部调用者
-        int begin = 2;
-        for (int i = begin; i < stackFrames.size(); i++) {
-            StackWalker.StackFrame inComingStackFrame = stackFrames.get(i);
-            if (Context.matchPackages(inComingStackFrame.getClassName())) {
-                return inComingStackFrame;
-            }
-        }
-        return stackFrames.get(begin);
     }
 
 

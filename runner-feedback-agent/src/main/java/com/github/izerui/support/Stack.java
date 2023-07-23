@@ -72,7 +72,7 @@ public abstract class Stack {
         for (int i = 1; i < stackFrames.size(); i++) {
             StackWalker.StackFrame stackItem = stackFrames.get(i);
             String key = getKey(stackItem);
-            if (!parentIds.contains(key) && Context.matchPackages(stackItem.getClassName())) {
+            if (!parentIds.contains(key)) {
                 parentIds.add(key);
             }
         }
