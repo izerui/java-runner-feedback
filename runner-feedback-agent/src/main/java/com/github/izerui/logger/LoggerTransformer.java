@@ -15,7 +15,6 @@ import java.lang.annotation.Annotation;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.security.ProtectionDomain;
-import java.sql.Statement;
 
 public class LoggerTransformer implements ClassFileTransformer, PremainAgent, AgentBuilder.Transformer {
 
