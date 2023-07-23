@@ -209,7 +209,7 @@ public class Span extends Stack {
         // 方法描述符
         variables.put("descriptor", AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, this.getDescriptor()));
         // 线程名
-        variables.put("thread", this.threadName);
+        variables.put("thread", AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, this.threadName));
         StringSubstitutor substitutor = new StringSubstitutor(variables);
         return substitutor.replace(templateStr);
     }
