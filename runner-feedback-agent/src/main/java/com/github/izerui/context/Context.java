@@ -24,6 +24,14 @@ public final class Context {
     public final static String[] PACKAGES;
 
     /**
+     * 扫描记录继承至如下接口的
+     */
+    public final static String[] INTERFACIES = {
+            "feign.Client",
+            "org.springframework.jdbc.core.JdbcOperations"
+    };
+
+    /**
      * 是否调试状态，输出拦截的方法信息
      */
     public static boolean DEBUGGER = false;
@@ -45,6 +53,9 @@ public final class Context {
             "com.github.izerui"
     };
 
+    /**
+     * 忽略带指定注解的
+     */
     public final static String[] IGNORE_ANNOTATIONS = {
             "org.springframework.cloud.openfeign.FeignClient"
     };

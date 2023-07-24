@@ -24,8 +24,8 @@ public class SampleController {
         for (int i = 0; i < 10; i++) {
             sampleService.writeName_0_1(UUID.randomUUID().toString(), true);
         }
-//        String home = baiduClient.getHome();
-//        System.out.println(home);
+        String home = baiduClient.getHome();
+        System.out.println(home);
         return sampleService.getUserName_0_2(UUID.randomUUID().toString());
     }
 }

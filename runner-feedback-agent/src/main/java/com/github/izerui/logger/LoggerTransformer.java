@@ -49,6 +49,9 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
             orMatcher = orMatcher.or(ElementMatchers.nameStartsWith(aPackage));
         }
 
+        // 指定接口的子类
+        orMatcher = withSubTypeOf(orMatcher, Context.INTERFACIES);
+
         matcher = matcher.and(orMatcher);
         return matcher;
     }
@@ -59,6 +62,20 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
                 try {
                     Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) Class.forName(annotationClassName);
                     matcher = matcher.and(ElementMatchers.not(ElementMatchers.hasAnnotation(ElementMatchers.annotationType(annotationClass))));
+                } catch (Exception ex) {
+                    ;
+                }
+            }
+        }
+        return matcher;
+    }
+
+    private ElementMatcher.Junction<? super TypeDescription> withSubTypeOf(ElementMatcher.Junction<? super TypeDescription> matcher, String... interfacies) {
+        if (interfacies != null) {
+            for (String itf : interfacies) {
+                try {
+                    Class<?> aClass = Class.forName(itf);
+                    matcher = matcher.or(ElementMatchers.isSubTypeOf(aClass));
                 } catch (Exception ex) {
                     ;
                 }
