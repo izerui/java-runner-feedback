@@ -1,7 +1,7 @@
 package com.github.izerui.structure;
 
-import com.github.izerui.context.Context;
 import com.github.izerui.PremainAgent;
+import com.github.izerui.context.Context;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -41,12 +41,11 @@ public class StructureTransformer implements ClassFileTransformer, PremainAgent 
                 ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
                 ClassVisitor cv = new StructureClassVisitor(cw, realClassName);
                 cr.accept(cv, ClassReader.EXPAND_FRAMES);
-                return cw.toByteArray();
             }
         } catch (Throwable ignored) {
             ignored.printStackTrace();
         }
-        return classfileBuffer;
+        return null;
     }
 
 }
