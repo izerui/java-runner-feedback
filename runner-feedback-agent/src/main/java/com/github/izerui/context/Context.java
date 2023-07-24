@@ -26,7 +26,7 @@ public final class Context {
     /**
      * 扫描记录继承至如下接口的
      */
-    public final static String[] INTERFACIES = {
+    public final static String[] INTERFACES = {
             "feign.Client",
             "org.springframework.jdbc.core.JdbcOperations"
     };

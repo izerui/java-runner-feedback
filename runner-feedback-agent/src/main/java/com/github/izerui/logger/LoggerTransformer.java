@@ -50,7 +50,7 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
         }
 
         // 指定接口的子类
-        orMatcher = withSubTypeOf(orMatcher, Context.INTERFACIES);
+        orMatcher = withSubTypeOf(orMatcher, Context.INTERFACES);
 
         matcher = matcher.and(orMatcher);
         return matcher;
