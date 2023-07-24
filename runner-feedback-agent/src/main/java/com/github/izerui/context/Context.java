@@ -38,7 +38,7 @@ public final class Context {
     public final static Map<String, String> INTERFACE_METHODS_MAP = new HashMap<>() {{
         put("feign.Client", "execute(Lfeign/Request;Lfeign/Request$Options;)Lfeign/Response;");
         put("java.sql.PreparedStatement", "*");
-        put("java.sql.Statement", "*");
+        put("java.sql.Statement", "startQueryTimer(Lcom/mysql/cj/Query;I)Lcom/mysql/cj/CancelQueryTask;");
     }};
 
     /**
