@@ -150,8 +150,8 @@ public final class Context {
         AtomicBoolean matched = new AtomicBoolean(false);
         INTERFACE_METHODS_MAP.forEach((cls, mdp) -> {
             try {
-                if (getCachedClass(cls).isAssignableFrom(getCachedClass(Context.getOriginName(currentStackFrame.getClassName(), "$")))
-                        && (mdp.equals("*") || mdp.equals(Context.getOriginName(currentStackFrame.getMethodName(), "$") + currentStackFrame.getDescriptor()))) {
+                if (getCachedClass(cls).isAssignableFrom(getCachedClass(getOriginName(currentStackFrame.getClassName(), "$")))
+                        && (mdp.equals("*") || mdp.equals(getOriginName(currentStackFrame.getMethodName(), "$") + currentStackFrame.getDescriptor()))) {
                     matched.set(true);
                 }
             } catch (Exception ex) {
@@ -171,7 +171,7 @@ public final class Context {
     public static ElementMatcher.Junction<? super TypeDescription> matchTypeWithOutAnnotation(ElementMatcher.Junction<? super TypeDescription> matcher) {
         for (String annotationClassName : Context.IGNORE_ANNOTATIONS) {
             try {
-                Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) Context.getCachedClass(annotationClassName);
+                Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) getCachedClass(annotationClassName);
                 matcher = matcher.and(ElementMatchers.not(ElementMatchers.hasAnnotation(ElementMatchers.annotationType(annotationClass))));
             } catch (Exception ex) {
                 ;
@@ -190,7 +190,7 @@ public final class Context {
     public static ElementMatcher.Junction<? super TypeDescription> matchTypeWithSubTypeOf(ElementMatcher.Junction<? super TypeDescription> matcher) {
         for (String className : INTERFACE_METHODS_MAP.keySet()) {
             try {
-                Class<?> aClass = Context.getCachedClass(className);
+                Class<?> aClass = getCachedClass(className);
                 matcher = matcher.or(ElementMatchers.isSubTypeOf(aClass));
             } catch (Exception ex) {
                 ;
