@@ -32,6 +32,10 @@ public final class Context {
     private final static Map<String, Class> classCacheMap = new HashMap<>();
 
     /**
+     * 扩展的扫描入口,由系统定义，固定扫描比如:
+     * 1. sql 执行
+     * 2. http请求
+     * 3. 消息发送等
      * 扫描记录继承至如下接口的方法 格式: [class]#[method][descriptor]
      */
     public final static String[] INTERFACE_METHODS = {
