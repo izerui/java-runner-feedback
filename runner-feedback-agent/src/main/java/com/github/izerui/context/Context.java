@@ -11,7 +11,6 @@ import org.objectweb.asm.Opcodes;
 import java.lang.annotation.Annotation;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class Context {
 
@@ -33,13 +32,13 @@ public final class Context {
     private final static Map<String, Class> classCacheMap = new HashMap<>();
 
     /**
-     * 扫描记录继承至如下接口的方法
+     * 扫描记录继承至如下接口的方法 格式: [class]#[method][descriptor]
      */
-    public final static Map<String, String> INTERFACE_METHODS_MAP = new HashMap<>() {{
-        put("feign.Client", "execute(Lfeign/Request;Lfeign/Request$Options;)Lfeign/Response;");
-        put("java.sql.PreparedStatement", "*");
-        put("java.sql.Statement", "*");
-    }};
+    public final static String[] INTERFACE_METHODS = {
+            "feign.Client#execute(Lfeign/Request;Lfeign/Request$Options;)Lfeign/Response;",
+            "java.sql.PreparedStatement#*",
+            "java.sql.Statement#*"
+    };
 
     /**
      * 是否调试状态，输出拦截的方法信息
@@ -147,18 +146,16 @@ public final class Context {
      * @return
      */
     public static boolean matchInterfaceMethods(StackWalker.StackFrame currentStackFrame) {
-        AtomicBoolean matched = new AtomicBoolean(false);
-        INTERFACE_METHODS_MAP.forEach((cls, mdp) -> {
-            try {
-                if (getCachedClass(cls).isAssignableFrom(getCachedClass(getOriginName(currentStackFrame.getClassName(), "$")))
-                        && (mdp.equals("*") || mdp.equals(getOriginName(currentStackFrame.getMethodName(), "$") + currentStackFrame.getDescriptor()))) {
-                    matched.set(true);
-                }
-            } catch (Exception ex) {
-                ;
+        for (String interfaceMethod : INTERFACE_METHODS) {
+            String[] split = interfaceMethod.split("#");
+            String cls = split[0];
+            String mdp = split[1];
+            if (getCachedClass(cls).isAssignableFrom(getCachedClass(getOriginName(currentStackFrame.getClassName(), "$")))
+                    && (mdp.equals("*") || mdp.equals(getOriginName(currentStackFrame.getMethodName(), "$") + currentStackFrame.getDescriptor()))) {
+                return true;
             }
-        });
-        return matched.get();
+        }
+        return false;
     }
 
 
@@ -188,9 +185,11 @@ public final class Context {
      * @return
      */
     public static ElementMatcher.Junction<? super TypeDescription> matchTypeWithSubTypeOf(ElementMatcher.Junction<? super TypeDescription> matcher) {
-        for (String className : INTERFACE_METHODS_MAP.keySet()) {
+        for (String interfaceMethod : INTERFACE_METHODS) {
+            String[] split = interfaceMethod.split("#");
+            String cls = split[0];
             try {
-                Class<?> aClass = getCachedClass(className);
+                Class<?> aClass = getCachedClass(cls);
                 matcher = matcher.or(ElementMatchers.isSubTypeOf(aClass));
             } catch (Exception ex) {
                 ;
