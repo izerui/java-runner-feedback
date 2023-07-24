@@ -14,7 +14,7 @@ public final class Context {
     /**
      * 每行输出格式
      */
-    public static String OUTPUT_FORMAT = "${success} ${time}${count}  ${package}(${file}:${line})${method}${descriptor} ${thread}";
+    public static String OUTPUT_FORMAT = "${success} ${time}${count} ${thread} ${package}(${file}:${line})${method}${descriptor} ${args}";
 
     public final static int ASM_VERSION = Opcodes.ASM9;
 
@@ -28,7 +28,7 @@ public final class Context {
      */
     public final static String[] INTERFACES = {
             "feign.Client",
-            "org.springframework.jdbc.core.JdbcOperations"
+            "java.sql.PreparedStatement"
     };
 
     /**

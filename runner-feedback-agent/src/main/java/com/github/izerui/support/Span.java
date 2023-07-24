@@ -179,8 +179,7 @@ public class Span extends Stack {
             this.children.get(i).appendLines(lines, prefix + (isTail ? "    " : "│   "), false, line);
         }
         if (this.children.size() > 0) {
-            this.children.get(this.children.size() - 1)
-                    .appendLines(lines, prefix + (isTail ? "    " : "│   "), true, line);
+            this.children.get(this.children.size() - 1).appendLines(lines, prefix + (isTail ? "    " : "│   "), true, line);
         }
     }
 
@@ -209,10 +208,38 @@ public class Span extends Stack {
         // 方法描述符
         variables.put("descriptor", AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, this.getDescriptor()));
         // 线程名
-        variables.put("thread", AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "["+this.getThreadName()+"]"));
+        variables.put("thread", AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[" + this.getThreadName() + "]"));
+        // 参数
+        variables.put("args", AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, toString(this.getArgumengts())));
         StringSubstitutor substitutor = new StringSubstitutor(variables);
         return substitutor.replace(templateStr);
     }
+
+    public static String toString(Object[] a) {
+        if (a == null) {
+            return "null";
+        }
+
+        int iMax = a.length - 1;
+        if (iMax == -1) {
+            return "[]";
+        }
+
+        StringBuilder b = new StringBuilder();
+        b.append('[');
+        for (int i = 0; ; i++) {
+            String text = String.valueOf(a[i]);
+            if (text != null) {
+                text = text.replaceAll("[\\t\\n\\r]", "");
+            }
+            b.append(text);
+            if (i == iMax) {
+                return b.append(']').toString();
+            }
+            b.append(", ");
+        }
+    }
+
 
     // for test
 //    private String id;
