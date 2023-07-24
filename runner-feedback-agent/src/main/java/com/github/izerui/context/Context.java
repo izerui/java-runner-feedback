@@ -2,12 +2,16 @@ package com.github.izerui.context;
 
 import com.github.izerui.ansi.AnsiColor;
 import com.github.izerui.ansi.AnsiOutput;
+import lombok.SneakyThrows;
+import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.matcher.ElementMatcher;
+import net.bytebuddy.matcher.ElementMatchers;
 import org.objectweb.asm.Opcodes;
 
+import java.lang.annotation.Annotation;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class Context {
 
@@ -24,12 +28,18 @@ public final class Context {
     public final static String[] PACKAGES;
 
     /**
-     * 扫描记录继承至如下接口的
+     * 类名与类的缓存
      */
-    public final static String[] INTERFACES = {
-            "feign.Client",
-            "java.sql.PreparedStatement"
-    };
+    private final static Map<String, Class> classCacheMap = new HashMap<>();
+
+    /**
+     * 扫描记录继承至如下接口的方法
+     */
+    public final static Map<String, String> INTERFACE_METHODS_MAP = new HashMap<>() {{
+        put("feign.Client", "execute(Lfeign/Request;Lfeign/Request$Options;)Lfeign/Response;");
+        put("java.sql.PreparedStatement", "*");
+        put("java.sql.Statement", "*");
+    }};
 
     /**
      * 是否调试状态，输出拦截的方法信息
@@ -127,6 +137,82 @@ public final class Context {
             }
         }
         return false;
+    }
+
+
+    /**
+     * 通过类名匹配是否属于设置的包下
+     *
+     * @param currentStackFrame
+     * @return
+     */
+    public static boolean matchInterfaceMethods(StackWalker.StackFrame currentStackFrame) {
+        AtomicBoolean matched = new AtomicBoolean(false);
+        INTERFACE_METHODS_MAP.forEach((cls, mdp) -> {
+            try {
+                if (getCachedClass(cls).isAssignableFrom(getCachedClass(Context.getOriginName(currentStackFrame.getClassName(), "$")))
+                        && (mdp.equals("*") || mdp.equals(Context.getOriginName(currentStackFrame.getMethodName(), "$") + currentStackFrame.getDescriptor()))) {
+                    matched.set(true);
+                }
+            } catch (Exception ex) {
+                ;
+            }
+        });
+        return matched.get();
+    }
+
+
+    /**
+     * 匹配类型忽略指定的注解
+     *
+     * @param matcher
+     * @return
+     */
+    public static ElementMatcher.Junction<? super TypeDescription> matchTypeWithOutAnnotation(ElementMatcher.Junction<? super TypeDescription> matcher) {
+        for (String annotationClassName : Context.IGNORE_ANNOTATIONS) {
+            try {
+                Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) Context.getCachedClass(annotationClassName);
+                matcher = matcher.and(ElementMatchers.not(ElementMatchers.hasAnnotation(ElementMatchers.annotationType(annotationClass))));
+            } catch (Exception ex) {
+                ;
+            }
+        }
+        return matcher;
+    }
+
+
+    /**
+     * 匹配指定是指定接口或者父类的子类匹配
+     *
+     * @param matcher
+     * @return
+     */
+    public static ElementMatcher.Junction<? super TypeDescription> matchTypeWithSubTypeOf(ElementMatcher.Junction<? super TypeDescription> matcher) {
+        for (String className : INTERFACE_METHODS_MAP.keySet()) {
+            try {
+                Class<?> aClass = Context.getCachedClass(className);
+                matcher = matcher.or(ElementMatchers.isSubTypeOf(aClass));
+            } catch (Exception ex) {
+                ;
+            }
+        }
+        return matcher;
+    }
+
+    /**
+     * 从缓存中获取class
+     *
+     * @param className
+     * @return
+     */
+    @SneakyThrows
+    public static Class getCachedClass(String className) {
+        Class aClass = classCacheMap.get(className);
+        if (aClass == null) {
+            aClass = Class.forName(className);
+            classCacheMap.put(className, aClass);
+        }
+        return aClass;
     }
 
 

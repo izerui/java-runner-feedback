@@ -15,6 +15,7 @@ import java.lang.annotation.Annotation;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.security.ProtectionDomain;
+import java.util.Map;
 
 public class LoggerTransformer implements ClassFileTransformer, PremainAgent, AgentBuilder.Transformer {
 
@@ -41,7 +42,7 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
         // 排除接口
         matcher = matcher.and(ElementMatchers.not(ElementMatchers.isInterface()));
         // 排除包含指定注解的类
-        matcher = withOutAnnotation(matcher, Context.IGNORE_ANNOTATIONS);
+        matcher = Context.matchTypeWithOutAnnotation(matcher);
 
         ElementMatcher.Junction<? super TypeDescription> orMatcher = ElementMatchers.none();
         // 或包含包名
@@ -50,37 +51,9 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
         }
 
         // 指定接口的子类
-        orMatcher = withSubTypeOf(orMatcher, Context.INTERFACES);
+        orMatcher = Context.matchTypeWithSubTypeOf(orMatcher);
 
         matcher = matcher.and(orMatcher);
-        return matcher;
-    }
-
-    private ElementMatcher.Junction<? super TypeDescription> withOutAnnotation(ElementMatcher.Junction<? super TypeDescription> matcher, String... annotationClassNames) {
-        if (annotationClassNames != null) {
-            for (String annotationClassName : annotationClassNames) {
-                try {
-                    Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) Class.forName(annotationClassName);
-                    matcher = matcher.and(ElementMatchers.not(ElementMatchers.hasAnnotation(ElementMatchers.annotationType(annotationClass))));
-                } catch (Exception ex) {
-                    ;
-                }
-            }
-        }
-        return matcher;
-    }
-
-    private ElementMatcher.Junction<? super TypeDescription> withSubTypeOf(ElementMatcher.Junction<? super TypeDescription> matcher, String... interfacies) {
-        if (interfacies != null) {
-            for (String itf : interfacies) {
-                try {
-                    Class<?> aClass = Class.forName(itf);
-                    matcher = matcher.or(ElementMatchers.isSubTypeOf(aClass));
-                } catch (Exception ex) {
-                    ;
-                }
-            }
-        }
         return matcher;
     }
 

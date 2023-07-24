@@ -69,7 +69,10 @@ public class LoggerInterceptor {
                 StackWalker.StackFrame currentStackFrame = stackFrames.get(0);
                 // 当tracer存在，则后续跨度及子线程都需要拦截记录
                 com.github.izerui.support.Tracer tracer = TracerContext.getTracer();
-                if (tracer != null) {
+                // 只记录指定扫描的包下或者指定接口方法的
+                if (tracer != null &&
+                        (Context.matchPackages(currentStackFrame.getClassName())
+                                || Context.matchInterfaceMethods(currentStackFrame))) {
                     int methodLine = MethodContext.getLine(method.getDeclaringClass().getName(), method.getName(), currentStackFrame.getDescriptor());
                     // 当能获取到本地类路径的方法行号则记录， 或者deepshow参数为true表示指定包下对象的父类方法也记录
 //                    System.out.println("拦截: " + method.getDeclaringClass().getName() + "#" + method.getName());
