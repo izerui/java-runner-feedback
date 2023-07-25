@@ -20,7 +20,7 @@ debugger: true
 # 树状每行的输出格式
 output_format: "${success} ${time}${count} ${thread} ${package}(${file}:${line})${method}${descriptor} ${args}"
 # 除了扫描packages以外的，另外包含的接口或者类，或者接口或者类的指定方法。 格式: [class]#[method][descriptor] , 不指定method则为 *
-interface_methods:
+class_methods:
   - feign.Client#execute(Lfeign/Request;Lfeign/Request$Options;)Lfeign/Response;
   - java.sql.PreparedStatement#*
   - java.sql.Statement#*

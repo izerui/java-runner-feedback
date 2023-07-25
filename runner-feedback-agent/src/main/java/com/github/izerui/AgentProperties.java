@@ -44,6 +44,6 @@ public class AgentProperties {
      * 3. 消息发送等
      * 扫描记录继承至如下接口的方法 格式: [class]#[method][descriptor]
      */
-    private String[] interface_methods;
+    private String[] class_methods;
 
 }

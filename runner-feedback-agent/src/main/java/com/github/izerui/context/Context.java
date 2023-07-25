@@ -86,8 +86,8 @@ public final class Context {
      * @return
      */
     public static boolean matchInterfaceMethods(StackWalker.StackFrame currentStackFrame) {
-        for (String interfaceMethod : properties.getInterface_methods()) {
-            String[] split = interfaceMethod.split("#");
+        for (String classMethod : properties.getClass_methods()) {
+            String[] split = classMethod.split("#");
             String cls = split[0];
             String mdp = split[1];
             if (cachedClass(cls).isAssignableFrom(cachedClass(getOriginName(currentStackFrame.getClassName(), "$")))
@@ -125,8 +125,8 @@ public final class Context {
      * @return
      */
     public static ElementMatcher.Junction<? super TypeDescription> matchTypeWithSubTypeOf(ElementMatcher.Junction<? super TypeDescription> matcher) {
-        for (String interfaceMethod : properties.getInterface_methods()) {
-            String[] split = interfaceMethod.split("#");
+        for (String classMethod : properties.getClass_methods()) {
+            String[] split = classMethod.split("#");
             String cls = split[0];
             try {
                 Class<?> aClass = cachedClass(cls);
