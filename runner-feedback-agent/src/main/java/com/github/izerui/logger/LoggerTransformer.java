@@ -90,6 +90,7 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
             String cls = customizer.getClassName();
             try {
                 Class<?> aClass = properties.getCachedClass(cls);
+                matcher = matcher.or(ElementMatchers.isDeclaredBy(aClass));
                 matcher = matcher.or(ElementMatchers.isSubTypeOf(aClass));
             } catch (Exception ex) {
                 ;
