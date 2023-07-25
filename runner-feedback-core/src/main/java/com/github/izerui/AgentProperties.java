@@ -54,6 +54,33 @@ public class AgentProperties {
      */
     private Customizer[] customizers;
 
+    public String[] getPackages() {
+        if (packages == null) {
+            packages = new String[0];
+        }
+        return packages;
+    }
+
+    public String[] getIgnorePackages() {
+        if (ignorePackages == null) {
+            ignorePackages = new String[0];
+        }
+        return ignorePackages;
+    }
+
+    public String[] getIgnoreAnnotations() {
+        if (ignoreAnnotations == null) {
+            ignoreAnnotations = new String[0];
+        }
+        return ignoreAnnotations;
+    }
+
+    public Customizer[] getCustomizers() {
+        if (customizers == null) {
+            customizers = new Customizer[0];
+        }
+        return customizers;
+    }
 
     /**
      * 自定义规则
