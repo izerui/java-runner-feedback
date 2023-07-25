@@ -3,12 +3,9 @@ package com.github.izerui.context;
 import com.github.izerui.AgentProperties;
 import com.github.izerui.ansi.AnsiColor;
 import com.github.izerui.ansi.AnsiOutput;
-import lombok.SneakyThrows;
 import org.objectweb.asm.Opcodes;
 import org.yaml.snakeyaml.Yaml;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 public final class Context {
@@ -19,9 +16,6 @@ public final class Context {
     private static final AgentProperties properties;
 
     public final static int ASM_VERSION = Opcodes.ASM9;
-
-
-
 
 
     static {
@@ -47,13 +41,6 @@ public final class Context {
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "开始愉快的玩耍吧!!!"));
         System.out.println("☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝");
     }
-
-
-
-
-
-
-
 
 
     public static final String[] TRACE_CHARS = new String[]{"a", "b", "c", "d", "e", "f",
