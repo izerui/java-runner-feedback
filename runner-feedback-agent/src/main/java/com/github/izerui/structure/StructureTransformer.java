@@ -1,5 +1,6 @@
 package com.github.izerui.structure;
 
+import com.github.izerui.AgentProperties;
 import com.github.izerui.PremainAgent;
 import com.github.izerui.context.Context;
 import org.objectweb.asm.ClassReader;
@@ -35,7 +36,9 @@ public class StructureTransformer implements ClassFileTransformer, PremainAgent 
                             byte[] classfileBuffer) throws IllegalClassFormatException {
         try {
             String realClassName = className.replace("/", ".");
-            if (Context.matchPackages(realClassName)) {
+            AgentProperties properties = Context.getProperties();
+            if (properties.matchPackages(realClassName) ||
+                    properties.matchCustomizerType(realClassName)) {
                 // 只记录特定包名下的类，可根据需要修改过滤条件
                 ClassReader cr = new ClassReader(classfileBuffer);
                 ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);

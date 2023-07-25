@@ -1,13 +1,13 @@
 package com.github.izerui.support;
 
-import com.github.izerui.ansi.AnsiColor;
-import com.github.izerui.ansi.AnsiOutput;
 import lombok.Builder;
 import lombok.Data;
-import org.apache.commons.text.StringSubstitutor;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -19,30 +19,46 @@ public class Span extends Stack {
 
     // 当前方法调用的帧
     protected List<StackWalker.StackFrame> stackFrames;
+
     // 被拦截的目标对象
     protected Object target;
+
     // 当前方法
     protected Method method;
+
     // 入参
     protected Object[] argumengts;
+
     // 是否是第一个请求入口
     protected boolean rootInComming;
+
     // 跟踪id
     protected String traceId;
+
     // 是否成功调用
     protected boolean success;
+
     // 调用次数
     protected int count;
+
     // 耗时
     protected long time;
+
     // 线程名
     protected String threadName;
+
     // 方法所属行号
     protected int methodLine;
+
     // 只是一个标记, 用法一: 表示是否增加到树中
     protected transient Integer mark;
+
     // 子集span
-    private List<Span> children;
+    protected List<Span> children;
+
+    public Class getTargetClass() {
+        return target.getClass();
+    }
 
     public List<Span> getChildren() {
         if (children == null) {
@@ -182,64 +198,6 @@ public class Span extends Stack {
             this.children.get(this.children.size() - 1).appendLines(lines, prefix + (isTail ? "    " : "│   "), true, line);
         }
     }
-
-    /**
-     * 根据Substitutor模版进行替换
-     *
-     * @param templateStr 模版
-     * @return 替换后的字符串
-     */
-    public String getSubstitutorStr(String templateStr) {
-        Map<String, Object> variables = new HashMap<>();
-        // 是否成功
-        variables.put("success", this.success ? AnsiOutput.toString(AnsiColor.GREEN, "[T]") : AnsiOutput.toString(AnsiColor.RED, "[F]"));
-        // 耗时
-        variables.put("time", this.time + "ms");
-        // 调用次数
-        variables.put("count", AnsiOutput.toString(AnsiColor.RED, this.count > 1 ? "[" + this.count + "]" : ""));
-        // 包名
-        variables.put("package", AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, this.getDeclaringPackage()));
-        // 文件名
-        variables.put("file", this.getFileName());
-        // 行号
-        variables.put("line", this.getLine());
-        // 方法
-        variables.put("method", AnsiOutput.toString(AnsiColor.YELLOW, this.getMethodName()));
-        // 方法描述符
-        variables.put("descriptor", AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, this.getDescriptor()));
-        // 线程名
-        variables.put("thread", AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[" + this.getThreadName() + "]"));
-        // 参数
-        variables.put("args", AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, toString(this.getArgumengts())));
-        StringSubstitutor substitutor = new StringSubstitutor(variables);
-        return substitutor.replace(templateStr);
-    }
-
-    public static String toString(Object[] a) {
-        if (a == null) {
-            return "null";
-        }
-
-        int iMax = a.length - 1;
-        if (iMax == -1) {
-            return "[]";
-        }
-
-        StringBuilder b = new StringBuilder();
-        b.append('[');
-        for (int i = 0; ; i++) {
-            String text = String.valueOf(a[i]);
-            if (text != null) {
-                text = text.replaceAll("[\\t\\n\\r]", "");
-            }
-            b.append(text);
-            if (i == iMax) {
-                return b.append(']').toString();
-            }
-            b.append(", ");
-        }
-    }
-
 
     // for test
 //    private String id;

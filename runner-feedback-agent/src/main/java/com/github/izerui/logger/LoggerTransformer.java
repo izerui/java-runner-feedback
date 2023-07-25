@@ -1,5 +1,6 @@
 package com.github.izerui.logger;
 
+import com.github.izerui.AgentProperties;
 import com.github.izerui.PremainAgent;
 import com.github.izerui.context.Context;
 import net.bytebuddy.agent.builder.AgentBuilder;
@@ -15,7 +16,6 @@ import java.lang.annotation.Annotation;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.security.ProtectionDomain;
-import java.util.Map;
 
 public class LoggerTransformer implements ClassFileTransformer, PremainAgent, AgentBuilder.Transformer {
 
@@ -36,13 +36,13 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
     private ElementMatcher<? super TypeDescription> getTypeMatcher() {
         ElementMatcher.Junction<? super TypeDescription> matcher = ElementMatchers.any();
         // 排除忽略的包
-        for (String ignorePackage : Context.getProperties().getIgnore_packages()) {
+        for (String ignorePackage : Context.getProperties().getIgnorePackages()) {
             matcher = matcher.and(ElementMatchers.not(ElementMatchers.nameStartsWith(ignorePackage)));
         }
         // 排除接口
         matcher = matcher.and(ElementMatchers.not(ElementMatchers.isInterface()));
         // 排除包含指定注解的类
-        matcher = Context.matchTypeWithOutAnnotation(matcher);
+        matcher = matchTypeWithOutAnnotation(matcher);
 
         ElementMatcher.Junction<? super TypeDescription> orMatcher = ElementMatchers.none();
         // 或包含包名
@@ -51,9 +51,50 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
         }
 
         // 指定接口的子类
-        orMatcher = Context.matchTypeWithSubTypeOf(orMatcher);
+        orMatcher = matchTypeWithSubTypeOf(orMatcher);
 
         matcher = matcher.and(orMatcher);
+        return matcher;
+    }
+
+
+    /**
+     * 匹配类型忽略指定的注解
+     *
+     * @param matcher
+     * @return
+     */
+    private ElementMatcher.Junction<? super TypeDescription> matchTypeWithOutAnnotation(ElementMatcher.Junction<? super TypeDescription> matcher) {
+        AgentProperties properties = Context.getProperties();
+        for (String annotationClassName : properties.getIgnoreAnnotations()) {
+            try {
+                Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) properties.getCachedClass(annotationClassName);
+                matcher = matcher.and(ElementMatchers.not(ElementMatchers.hasAnnotation(ElementMatchers.annotationType(annotationClass))));
+            } catch (Exception ex) {
+                ;
+            }
+        }
+        return matcher;
+    }
+
+
+    /**
+     * 匹配指定是指定接口或者父类的子类匹配
+     *
+     * @param matcher
+     * @return
+     */
+    private ElementMatcher.Junction<? super TypeDescription> matchTypeWithSubTypeOf(ElementMatcher.Junction<? super TypeDescription> matcher) {
+        AgentProperties properties = Context.getProperties();
+        for (AgentProperties.Customizer customizer : properties.getCustomizers()) {
+            String cls = customizer.getClassName();
+            try {
+                Class<?> aClass = properties.getCachedClass(cls);
+                matcher = matcher.or(ElementMatchers.isSubTypeOf(aClass));
+            } catch (Exception ex) {
+                ;
+            }
+        }
         return matcher;
     }
 
@@ -65,10 +106,10 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
                 .and(ElementMatchers.not(ElementMatchers.isEquals()))
                 .and(ElementMatchers.not(ElementMatchers.isClone()))
                 .and(ElementMatchers.not(ElementMatchers.isToString()));
-        if (!Context.getProperties().isShow_getter()) {
+        if (!Context.getProperties().isShowGetter()) {
             matcher = matcher.and(ElementMatchers.not(ElementMatchers.isGetter()));
         }
-        if (!Context.getProperties().isShow_setter()) {
+        if (!Context.getProperties().isShowSetter()) {
             matcher = matcher.and(ElementMatchers.not(ElementMatchers.isSetter()));
         }
         return builder

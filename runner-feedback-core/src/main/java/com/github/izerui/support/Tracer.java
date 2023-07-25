@@ -1,13 +1,16 @@
 package com.github.izerui.support;
 
+import com.github.izerui.AgentProperties;
 import com.github.izerui.ansi.AnsiColor;
 import com.github.izerui.ansi.AnsiOutput;
-import com.github.izerui.context.Context;
 import lombok.Builder;
 import lombok.Data;
-import org.apache.commons.text.StringSubstitutor;
 
-import java.util.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -16,6 +19,10 @@ import java.util.stream.Collectors;
 @Data
 @Builder
 public class Tracer {
+
+    public final static SimpleDateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+
     // 唯一的traceId
     private String id;
     // trace跟踪名称
@@ -49,12 +56,12 @@ public class Tracer {
     /**
      * 输出打印树状请求链路
      */
-    public void print() {
+    public void print(AgentProperties properties) {
         System.out.println("☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟");
-        System.out.println(AnsiOutput.toString(AnsiColor.GREEN, String.format("【start:%s name:%s traceId:%s time:%s】", Context.DATE_TIME_FORMATTER.format(new Date(start)), name, id, (end - start) + "ms")));
+        System.out.println(AnsiOutput.toString(AnsiColor.GREEN, String.format("【start:%s name:%s traceId:%s time:%s】", DATE_TIME_FORMATTER.format(new Date(start)), name, id, (end - start) + "ms")));
         System.out.println("-------------------------------------------------------------------");
-        for (Span span : getTreeSpans()) {
-            span.printTree(item -> item.getSubstitutorStr(Context.getProperties().getOutput_format()));
+        for (Span span : getTreeSpans(properties)) {
+            span.printTree(item -> properties.render(item));
         }
         System.out.println("☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝");
     }
@@ -64,8 +71,8 @@ public class Tracer {
      *
      * @return
      */
-    public List<Span> getTreeSpans() {
-        if (Context.getProperties().isDebugger()) {
+    public List<Span> getTreeSpans(AgentProperties properties) {
+        if (properties.isDebugger()) {
             for (Span span : spans) {
                 System.out.println(span.getId());
                 for (String parentId : span.getParentIds()) {
@@ -73,30 +80,6 @@ public class Tracer {
                 }
             }
         }
-
-//        TreeMapper<Span,Span> treeMapper = new TreeMapper<Span, Span>() {
-//            @Override
-//            protected boolean isRoot(Span item) {
-//                return item.isRootInComming();
-//            }
-//
-//            @Override
-//            protected boolean isParent(Span child, Span parent) {
-//                return Objects.equals(child.getParentId(), parent.getId());
-//            }
-//
-//            @Override
-//            protected Span map(Span item, Span parent) {
-//                return item;
-//            }
-//
-//            @Override
-//            protected void addChild(Span child, Span parent) {
-//                parent.getChildren().add(child);
-//            }
-//        };
-//        return treeMapper.treeMap(spans);
-
         for (Span span : spans) {
             if (span.isRootInComming()) {
                 continue;

@@ -1,7 +1,5 @@
 package com.github.izerui.support;
 
-import com.github.izerui.context.Context;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +56,26 @@ public abstract class Stack {
         if (stackFrame == null) {
             return "NONE";
         }
-        return Context.getOriginName(stackFrame.getClassName(), "$") + "#" + Context.getOriginName(stackFrame.getMethodName(), "$") + stackFrame.getDescriptor();
+        return getOriginName(stackFrame.getClassName(), "$") + "#" + getOriginName(stackFrame.getMethodName(), "$") + stackFrame.getDescriptor();
+    }
+
+    /**
+     * 获取原始名
+     *
+     * @param proxyName       代理名称
+     * @param proxyIdentifier 代理标识符, class类型: $$  method类型: $
+     * @return
+     */
+    private String getOriginName(String proxyName, String proxyIdentifier) {
+        String originMethodName = proxyName;
+        int proxySplitIndex = proxyName.indexOf(proxyIdentifier);
+        if (proxySplitIndex > -1) {
+            originMethodName = proxyName.substring(0, proxySplitIndex);
+        }
+        if (originMethodName == null || "".equals(originMethodName)) {
+            originMethodName = proxyName;
+        }
+        return originMethodName;
     }
 
     /**

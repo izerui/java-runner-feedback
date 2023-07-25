@@ -2,7 +2,7 @@
 
 ## 功能
 java类调用过程记录Agent, 并以树状调用层次结构输出。
-
+[![](https://jitpack.io/v/izerui/wx-java-sdk.svg)](https://jitpack.io/#izerui/wx-java-sdk)
 效果图:
 <img src="https://github.com/izerui/java-runner-feedback/blob/main/demo.jpg?raw=true">
 
@@ -18,12 +18,21 @@ java类调用过程记录Agent, 并以树状调用层次结构输出。
 ```
 
 2. 指定切入口:
-添加依赖(需要自行上传到自己的私服仓库):
+添加仓库
+```
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+```
+添加依赖
 ```
 <dependency>
     <groupId>com.github.izerui</groupId>
     <artifactId>runner-feedback-core</artifactId>
-    <version>1.0.3</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 声明要切入的入口方法:

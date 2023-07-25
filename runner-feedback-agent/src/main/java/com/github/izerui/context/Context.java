@@ -4,14 +4,9 @@ import com.github.izerui.AgentProperties;
 import com.github.izerui.ansi.AnsiColor;
 import com.github.izerui.ansi.AnsiOutput;
 import lombok.SneakyThrows;
-import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatchers;
 import org.objectweb.asm.Opcodes;
 import org.yaml.snakeyaml.Yaml;
 
-import java.lang.annotation.Annotation;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -26,13 +21,8 @@ public final class Context {
     public final static int ASM_VERSION = Opcodes.ASM9;
 
 
-    /**
-     * 类名与类的缓存
-     */
-    private final static Map<String, Class> classCacheMap = new HashMap<>();
 
 
-    public final static SimpleDateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     static {
         Yaml yaml = new Yaml();
@@ -42,6 +32,7 @@ public final class Context {
 
     /**
      * 获取配置
+     *
      * @return
      */
     public static AgentProperties getProperties() {
@@ -58,121 +49,11 @@ public final class Context {
     }
 
 
-    /**
-     * 通过类名匹配是否属于设置的包下
-     *
-     * @param className
-     * @return
-     */
-    public static boolean matchPackages(String className) {
-        for (String ignorePackage : properties.getIgnore_packages()) {
-            if (className.startsWith(ignorePackage)) {
-                return false;
-            }
-        }
-        for (String aPackage : properties.getPackages()) {
-            if (className.startsWith(aPackage)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
 
-    /**
-     * 通过类名匹配是否属于设置的包下
-     *
-     * @param currentStackFrame
-     * @return
-     */
-    public static boolean matchInterfaceMethods(StackWalker.StackFrame currentStackFrame) {
-        for (String classMethod : properties.getClass_methods()) {
-            String[] split = classMethod.split("#");
-            String cls = split[0];
-            String mdp = split[1];
-            if (cachedClass(cls).isAssignableFrom(cachedClass(getOriginName(currentStackFrame.getClassName(), "$")))
-                    && (mdp.equals("*") || mdp.startsWith(getOriginName(currentStackFrame.getMethodName(), "$") + currentStackFrame.getDescriptor()))) {
-                return true;
-            }
-        }
-        return false;
-    }
 
 
-    /**
-     * 匹配类型忽略指定的注解
-     *
-     * @param matcher
-     * @return
-     */
-    public static ElementMatcher.Junction<? super TypeDescription> matchTypeWithOutAnnotation(ElementMatcher.Junction<? super TypeDescription> matcher) {
-        for (String annotationClassName : properties.getIgnore_annotations()) {
-            try {
-                Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) cachedClass(annotationClassName);
-                matcher = matcher.and(ElementMatchers.not(ElementMatchers.hasAnnotation(ElementMatchers.annotationType(annotationClass))));
-            } catch (Exception ex) {
-                ;
-            }
-        }
-        return matcher;
-    }
 
-
-    /**
-     * 匹配指定是指定接口或者父类的子类匹配
-     *
-     * @param matcher
-     * @return
-     */
-    public static ElementMatcher.Junction<? super TypeDescription> matchTypeWithSubTypeOf(ElementMatcher.Junction<? super TypeDescription> matcher) {
-        for (String classMethod : properties.getClass_methods()) {
-            String[] split = classMethod.split("#");
-            String cls = split[0];
-            try {
-                Class<?> aClass = cachedClass(cls);
-                matcher = matcher.or(ElementMatchers.isSubTypeOf(aClass));
-            } catch (Exception ex) {
-                ;
-            }
-        }
-        return matcher;
-    }
-
-    /**
-     * 从缓存中获取class
-     *
-     * @param className
-     * @return
-     */
-    @SneakyThrows
-    public static Class cachedClass(String className) {
-        Class aClass = classCacheMap.get(className);
-        if (aClass == null) {
-            aClass = Class.forName(className);
-            classCacheMap.put(className, aClass);
-        }
-        return aClass;
-    }
-
-
-    /**
-     * 获取原始名
-     *
-     * @param proxyName       代理名称
-     * @param proxyIdentifier 代理标识符, class类型: $$  method类型: $
-     * @return
-     */
-    public static String getOriginName(String proxyName, String proxyIdentifier) {
-        String originMethodName = proxyName;
-        int proxySplitIndex = proxyName.indexOf(proxyIdentifier);
-        if (proxySplitIndex > -1) {
-            originMethodName = proxyName.substring(0, proxySplitIndex);
-        }
-        if (originMethodName == null || "".equals(originMethodName)) {
-            originMethodName = proxyName;
-        }
-        return originMethodName;
-    }
 
 
     public static final String[] TRACE_CHARS = new String[]{"a", "b", "c", "d", "e", "f",
