@@ -10,7 +10,6 @@ java类调用过程记录Agent, 并以树状调用层次结构输出。
 1. 添加vm-options配置:
 ```
 -javaagent:/Users/serv/runner-feedback-agent.jar
--Dfeedback.packages=com.yj2025,com.ecworking
 ```
 
 如果需要监看线程池的调用关系链路请在feedback-agent之前加入
@@ -35,6 +34,34 @@ public RespVO<PageVo<BusinessTaskVo>> findTaskList(@RequestBody BaseQueryVo vo) 
 }
 ```
 
+3. 添加配置文件 `feedback.yaml` 到类路径中
+```
+# 是否启用
+enabled: true
+# 要扫描的包路径前缀
+packages:
+  - com.yj2025
+  - com.ecworking
+# 忽略的包路径前缀
+ignore_packages:
+  - com.github.izerui
+# 忽略的包含指定注解的类
+ignore_annotations:
+  - org.springframework.cloud.openfeign.FeignClient
+# 是否在树状输出中包含set方法
+show_setter: true
+# 是否在树状输出中包含get方法
+show_getter: true
+# 是否调试状态
+debugger: true
+# 树状每行的输出格式
+output_format: "${success} ${time}${count} ${thread} ${package}(${file}:${line})${method}${descriptor} ${args}"
+# 除了扫描packages以外的，另外包含的接口或者类，或者接口或者类的指定方法
+interface_methods:
+  - feign.Client#execute(Lfeign/Request;Lfeign/Request$Options;)Lfeign/Response;
+  - java.sql.PreparedStatement#*
+  - java.sql.Statement#*
+```
 
 以下非本工程开发可忽略
 ====================

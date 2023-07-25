@@ -54,7 +54,7 @@ public class Tracer {
         System.out.println(AnsiOutput.toString(AnsiColor.GREEN, String.format("【start:%s name:%s traceId:%s time:%s】", Context.DATE_TIME_FORMATTER.format(new Date(start)), name, id, (end - start) + "ms")));
         System.out.println("-------------------------------------------------------------------");
         for (Span span : getTreeSpans()) {
-            span.printTree(item -> item.getSubstitutorStr(Context.OUTPUT_FORMAT));
+            span.printTree(item -> item.getSubstitutorStr(Context.getProperties().getOutput_format()));
         }
         System.out.println("☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝");
     }
@@ -65,7 +65,7 @@ public class Tracer {
      * @return
      */
     public List<Span> getTreeSpans() {
-        if (Context.DEBUGGER) {
+        if (Context.getProperties().isDebugger()) {
             for (Span span : spans) {
                 System.out.println(span.getId());
                 for (String parentId : span.getParentIds()) {

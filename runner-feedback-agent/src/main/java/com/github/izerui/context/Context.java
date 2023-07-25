@@ -1,5 +1,6 @@
 package com.github.izerui.context;
 
+import com.github.izerui.AgentProperties;
 import com.github.izerui.ansi.AnsiColor;
 import com.github.izerui.ansi.AnsiOutput;
 import lombok.SneakyThrows;
@@ -7,120 +8,55 @@ import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.objectweb.asm.Opcodes;
+import org.yaml.snakeyaml.Yaml;
 
 import java.lang.annotation.Annotation;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public final class Context {
 
     /**
-     * 每行输出格式
+     * agnet 配置文件
      */
-    public static String OUTPUT_FORMAT = "${success} ${time}${count} ${thread} ${package}(${file}:${line})${method}${descriptor} ${args}";
+    private static final AgentProperties properties;
 
     public final static int ASM_VERSION = Opcodes.ASM9;
 
-    /**
-     * 扫描记录包含的包名下的类
-     */
-    public final static String[] PACKAGES;
 
     /**
      * 类名与类的缓存
      */
     private final static Map<String, Class> classCacheMap = new HashMap<>();
 
-    /**
-     * 扩展的扫描入口,由系统定义，固定扫描比如:
-     * 1. sql 执行
-     * 2. http请求
-     * 3. 消息发送等
-     * 扫描记录继承至如下接口的方法 格式: [class]#[method][descriptor]
-     */
-    public final static String[] INTERFACE_METHODS = {
-            "feign.Client#execute(Lfeign/Request;Lfeign/Request$Options;)Lfeign/Response;",
-            "java.sql.PreparedStatement#*",
-            "java.sql.Statement#*"
-    };
-
-    /**
-     * 是否调试状态，输出拦截的方法信息
-     */
-    public static boolean DEBUGGER = false;
-
-    /**
-     * 是否拦截并显示get方法
-     */
-    public static boolean SHOW_GETTER = false;
-
-    /**
-     * 是否拦截并显示set方法
-     */
-    public static boolean SHOW_SETTER = false;
-
-    /**
-     * 忽略指定包名下的类
-     */
-    public final static String[] IGNORE_PACKAGES = {
-            "com.github.izerui"
-    };
-
-    /**
-     * 忽略带指定注解的
-     */
-    public final static String[] IGNORE_ANNOTATIONS = {
-            "org.springframework.cloud.openfeign.FeignClient"
-    };
-
 
     public final static SimpleDateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     static {
+        Yaml yaml = new Yaml();
+        properties = yaml.loadAs(ClassLoader.getSystemResourceAsStream("feedback.yaml"), AgentProperties.class);
         AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
-        String feedbackPackages = getStringProperty("feedback.packages", null);
-        if (feedbackPackages != null && !"".equals(feedbackPackages)) {
-            PACKAGES = feedbackPackages.split(",");
-        } else {
-            System.out.println("未获取到正确的可【feedback】的包匹配字符串, 请正确配置agent类似: -javaagent:~/runner-feedback-agent.jar -Dfeedback.packages=com.github.sample,com.yj2025");
-            PACKAGES = new String[0];
-        }
-        OUTPUT_FORMAT = getStringProperty("feedback.output-format", OUTPUT_FORMAT);
-        DEBUGGER = getBoolProperty("feedback.debugger", DEBUGGER);
-        SHOW_GETTER = getBoolProperty("feedback.show-getter", SHOW_GETTER);
-        SHOW_SETTER = getBoolProperty("feedback.show-setter", SHOW_SETTER);
+    }
+
+    /**
+     * 获取配置
+     * @return
+     */
+    public static AgentProperties getProperties() {
+        return properties;
     }
 
     public static void printAfterAgent() {
         System.out.println("☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟");
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "插桩: runner-feedback-agent 成功!"));
-        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.packages](拦截包名,多个逗号分隔): " + Arrays.toString(Context.PACKAGES)));
-        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.debugger](是否输出调试信息): " + Context.DEBUGGER));
-        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.show-getter](是否拦截并显示get方法): " + Context.SHOW_GETTER));
-        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.show-setter](是否拦截并显示set方法): " + Context.SHOW_SETTER));
-        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.output-format](每行输出格式): " + Context.OUTPUT_FORMAT));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "配置文件: feedback.yaml"));
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "使用@Tracer('标记方法')就可以拦截调用链并输出树状结构!"));
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "开始愉快的玩耍吧!!!"));
         System.out.println("☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝");
     }
 
-    private static String getStringProperty(String key, String defaultValue) {
-        Properties properties = System.getProperties();
-        Object value = properties.get(key);
-        if (value != null) {
-            return String.valueOf(value);
-        }
-        return defaultValue;
-    }
-
-    private static boolean getBoolProperty(String key, boolean defaultBool) {
-        Properties properties = System.getProperties();
-        Object bool = properties.get(key);
-        if (bool != null) {
-            return Boolean.valueOf(String.valueOf(bool));
-        }
-        return defaultBool;
-    }
 
     /**
      * 通过类名匹配是否属于设置的包下
@@ -129,12 +65,12 @@ public final class Context {
      * @return
      */
     public static boolean matchPackages(String className) {
-        for (String ignorePackage : IGNORE_PACKAGES) {
+        for (String ignorePackage : properties.getIgnore_packages()) {
             if (className.startsWith(ignorePackage)) {
                 return false;
             }
         }
-        for (String aPackage : PACKAGES) {
+        for (String aPackage : properties.getPackages()) {
             if (className.startsWith(aPackage)) {
                 return true;
             }
@@ -150,11 +86,11 @@ public final class Context {
      * @return
      */
     public static boolean matchInterfaceMethods(StackWalker.StackFrame currentStackFrame) {
-        for (String interfaceMethod : INTERFACE_METHODS) {
+        for (String interfaceMethod : properties.getInterface_methods()) {
             String[] split = interfaceMethod.split("#");
             String cls = split[0];
             String mdp = split[1];
-            if (getCachedClass(cls).isAssignableFrom(getCachedClass(getOriginName(currentStackFrame.getClassName(), "$")))
+            if (cachedClass(cls).isAssignableFrom(cachedClass(getOriginName(currentStackFrame.getClassName(), "$")))
                     && (mdp.equals("*") || mdp.startsWith(getOriginName(currentStackFrame.getMethodName(), "$") + currentStackFrame.getDescriptor()))) {
                 return true;
             }
@@ -170,9 +106,9 @@ public final class Context {
      * @return
      */
     public static ElementMatcher.Junction<? super TypeDescription> matchTypeWithOutAnnotation(ElementMatcher.Junction<? super TypeDescription> matcher) {
-        for (String annotationClassName : Context.IGNORE_ANNOTATIONS) {
+        for (String annotationClassName : properties.getIgnore_annotations()) {
             try {
-                Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) getCachedClass(annotationClassName);
+                Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) cachedClass(annotationClassName);
                 matcher = matcher.and(ElementMatchers.not(ElementMatchers.hasAnnotation(ElementMatchers.annotationType(annotationClass))));
             } catch (Exception ex) {
                 ;
@@ -189,11 +125,11 @@ public final class Context {
      * @return
      */
     public static ElementMatcher.Junction<? super TypeDescription> matchTypeWithSubTypeOf(ElementMatcher.Junction<? super TypeDescription> matcher) {
-        for (String interfaceMethod : INTERFACE_METHODS) {
+        for (String interfaceMethod : properties.getInterface_methods()) {
             String[] split = interfaceMethod.split("#");
             String cls = split[0];
             try {
-                Class<?> aClass = getCachedClass(cls);
+                Class<?> aClass = cachedClass(cls);
                 matcher = matcher.or(ElementMatchers.isSubTypeOf(aClass));
             } catch (Exception ex) {
                 ;
@@ -209,7 +145,7 @@ public final class Context {
      * @return
      */
     @SneakyThrows
-    public static Class getCachedClass(String className) {
+    public static Class cachedClass(String className) {
         Class aClass = classCacheMap.get(className);
         if (aClass == null) {
             aClass = Class.forName(className);

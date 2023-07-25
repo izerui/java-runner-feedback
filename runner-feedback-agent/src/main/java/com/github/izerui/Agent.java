@@ -3,6 +3,7 @@ package com.github.izerui;
 import com.github.izerui.context.Context;
 import com.github.izerui.logger.LoggerTransformer;
 import com.github.izerui.structure.StructureTransformer;
+import org.yaml.snakeyaml.Yaml;
 
 import java.lang.instrument.Instrumentation;
 import java.util.Arrays;
@@ -21,8 +22,10 @@ public class Agent {
      * @param instrumentation
      */
     public static void premain(String args, Instrumentation instrumentation) {
-        Arrays.stream(PREMAIN_AGENTS).forEach(premainAgent -> premainAgent.premain(args, instrumentation));
-        Context.printAfterAgent();
+        if (Context.getProperties().isEnabled()) {
+            Arrays.stream(PREMAIN_AGENTS).forEach(premainAgent -> premainAgent.premain(args, instrumentation));
+            Context.printAfterAgent();
+        }
     }
 
 }

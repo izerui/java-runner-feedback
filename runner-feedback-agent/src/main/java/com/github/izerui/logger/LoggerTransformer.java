@@ -36,7 +36,7 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
     private ElementMatcher<? super TypeDescription> getTypeMatcher() {
         ElementMatcher.Junction<? super TypeDescription> matcher = ElementMatchers.any();
         // 排除忽略的包
-        for (String ignorePackage : Context.IGNORE_PACKAGES) {
+        for (String ignorePackage : Context.getProperties().getIgnore_packages()) {
             matcher = matcher.and(ElementMatchers.not(ElementMatchers.nameStartsWith(ignorePackage)));
         }
         // 排除接口
@@ -46,7 +46,7 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
 
         ElementMatcher.Junction<? super TypeDescription> orMatcher = ElementMatchers.none();
         // 或包含包名
-        for (String aPackage : Context.PACKAGES) {
+        for (String aPackage : Context.getProperties().getPackages()) {
             orMatcher = orMatcher.or(ElementMatchers.nameStartsWith(aPackage));
         }
 
@@ -65,10 +65,10 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
                 .and(ElementMatchers.not(ElementMatchers.isEquals()))
                 .and(ElementMatchers.not(ElementMatchers.isClone()))
                 .and(ElementMatchers.not(ElementMatchers.isToString()));
-        if (!Context.SHOW_GETTER) {
+        if (!Context.getProperties().isShow_getter()) {
             matcher = matcher.and(ElementMatchers.not(ElementMatchers.isGetter()));
         }
-        if (!Context.SHOW_SETTER) {
+        if (!Context.getProperties().isShow_setter()) {
             matcher = matcher.and(ElementMatchers.not(ElementMatchers.isSetter()));
         }
         return builder
