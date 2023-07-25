@@ -9,12 +9,12 @@ packages:
 ignorePackages:
   - com.github.izerui
 # 忽略的包含指定注解的类
-ignore_annotations:
+ignoreAnnotations:
   - org.springframework.cloud.openfeign.FeignClient
 # 是否在树状输出中包含set方法
-show_setter: true
+showSetter: true
 # 是否在树状输出中包含get方法
-show_getter: true
+showGetter: true
 # 是否调试状态
 debugger: true
 # 树状每行的输出格式
