@@ -155,7 +155,7 @@ public final class Context {
             String cls = split[0];
             String mdp = split[1];
             if (getCachedClass(cls).isAssignableFrom(getCachedClass(getOriginName(currentStackFrame.getClassName(), "$")))
-                    && (mdp.equals("*") || mdp.equals(getOriginName(currentStackFrame.getMethodName(), "$") + currentStackFrame.getDescriptor()))) {
+                    && (mdp.equals("*") || mdp.startsWith(getOriginName(currentStackFrame.getMethodName(), "$") + currentStackFrame.getDescriptor()))) {
                 return true;
             }
         }
