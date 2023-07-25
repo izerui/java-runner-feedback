@@ -37,8 +37,7 @@ public class StructureTransformer implements ClassFileTransformer, PremainAgent 
         try {
             String realClassName = className.replace("/", ".");
             AgentProperties properties = Context.getProperties();
-            if (properties.matchPackages(realClassName) ||
-                    properties.matchCustomizerType(realClassName)) {
+            if (properties.matchPackages(realClassName)) {
                 // 只记录特定包名下的类，可根据需要修改过滤条件
                 ClassReader cr = new ClassReader(classfileBuffer);
                 ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);

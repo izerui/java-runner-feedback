@@ -67,7 +67,7 @@ public class AgentProperties {
         // 方法描述符
         private String descriptor;
         // 行输出渲染器
-        private Class rendererClass;
+        private String rendererClass;
     }
 
 
@@ -102,28 +102,17 @@ public class AgentProperties {
                 if (customizer.getMethodName().equals("*")) {
                     return customizer;
                 }
-                if (customizer.getMethodName().equals(getOriginName(methodName, "$"))
-                        && customizer.getDescriptor().equals(descriptor)) {
-                    return customizer;
+                if (customizer.getMethodName().equals(getOriginName(methodName, "$"))) {
+                    if (customizer.getDescriptor() == null || "".equals(customizer.getDescriptor()) || "*".equals(customizer.getDescriptor())) {
+                        return customizer;
+                    }
+                    if (customizer.getDescriptor().equals(descriptor)) {
+                        return customizer;
+                    }
                 }
             }
         }
         return null;
-    }
-
-
-    /**
-     * 是否在自定义规则里面
-     *
-     * @return
-     */
-    public boolean matchCustomizerType(String className) {
-        for (AgentProperties.Customizer customizer : this.getCustomizers()) {
-            if (getCachedClass(customizer.getClassName()).isAssignableFrom(getCachedClass(getOriginName(className, "$")))) {
-                return true;
-            }
-        }
-        return false;
     }
 
 
@@ -141,7 +130,7 @@ public class AgentProperties {
         LineRenderer lineRenderer = LineRenderer.DEFAULT;
         AgentProperties.Customizer customizer = this.getMatchCustomizer(span.getClassName(), span.getMethodName(), span.getDescriptor());
         if (customizer != null && customizer.getRendererClass() != null) {
-            lineRenderer = (LineRenderer) customizer.getRendererClass().getConstructors()[0].newInstance();
+            lineRenderer = (LineRenderer) getCachedClass(customizer.getRendererClass()).getConstructors()[0].newInstance();
         }
         return lineRenderer.render(span, this);
     }
