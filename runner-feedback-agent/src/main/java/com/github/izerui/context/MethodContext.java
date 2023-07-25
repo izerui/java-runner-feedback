@@ -1,6 +1,7 @@
 package com.github.izerui.context;
 
 import java.lang.reflect.Method;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,7 +77,7 @@ public class MethodContext {
      * @param method
      * @return
      */
-    private static String getMethodDescriptor(Method method) {
+    public static String getMethodDescriptor(Method method) {
         StringBuilder sb = new StringBuilder();
         sb.append("(")
                 .append(getTypeDescriptors(method.getParameterTypes()))
@@ -140,4 +141,11 @@ public class MethodContext {
         }
         return "";
     }
+
+
+    public static void main(String[] args) throws NoSuchMethodException {
+        Method method = Statement.class.getDeclaredMethod("executeQuery", String.class);
+        System.out.println(method.getName() + getMethodDescriptor(method));
+    }
+
 }
