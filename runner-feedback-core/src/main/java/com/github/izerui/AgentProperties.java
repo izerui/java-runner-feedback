@@ -125,7 +125,8 @@ public class AgentProperties {
      */
     public AgentProperties.Customizer getMatchCustomizer(String className, String methodName, String descriptor) {
         for (AgentProperties.Customizer customizer : this.getCustomizers()) {
-            if (getCachedClass(customizer.getClassName()).isAssignableFrom(getCachedClass(getOriginName(className, "$")))) {
+            if (customizer.getClassName().equals(getOriginName(className, "$"))
+                    || getCachedClass(customizer.getClassName()).isAssignableFrom(getCachedClass(getOriginName(className, "$")))) {
                 if (customizer.getMethodName().equals("*")) {
                     return customizer;
                 }

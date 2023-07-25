@@ -30,3 +30,7 @@ customizers:
   - className: "java.sql.Statement"
     methodName: "executeQuery"
     rendererClass: "com.github.izerui.renderer.SampleLineRenderer"
+  - className: "com.mysql.cj.jdbc.ClientPreparedStatement"
+    methodName: "execute"
+  - className: "com.zaxxer.hikari.pool.HikariProxyPreparedStatement"
+    methodName: "executeQuery"
