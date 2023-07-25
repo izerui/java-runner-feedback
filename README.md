@@ -43,25 +43,36 @@ enabled: true
 packages:
   - com.yj2025
   - com.ecworking
+  - com.github.sample
 # 忽略的包路径前缀
-ignore_packages:
+ignorePackages:
   - com.github.izerui
 # 忽略的包含指定注解的类
-ignore_annotations:
+ignoreAnnotations:
   - org.springframework.cloud.openfeign.FeignClient
 # 是否在树状输出中包含set方法
-show_setter: true
+showSetter: false
 # 是否在树状输出中包含get方法
-show_getter: true
+showGetter: false
 # 是否调试状态
-debugger: true
+debugger: false
 # 树状每行的输出格式
-output_format: "${success} ${time}${count} ${thread} ${package}(${file}:${line})${method}${descriptor} ${args}"
-# 除了扫描packages以外的，另外包含的接口或者类，或者接口或者类的指定方法
-interface_methods:
-  - feign.Client#execute(Lfeign/Request;Lfeign/Request$Options;)Lfeign/Response;
-  - java.sql.PreparedStatement#*
-  - java.sql.Statement#*
+outputFormat: "${success} ${time}${count} ${thread} ${package}(${file}:${line})${method}${descriptor} ${args}"
+# 除了扫描packages以外的，另外包含的接口或者类，或者接口或者类的指定方法。 格式: [class]#[method][descriptor] , 不指定method则为 * , 并可自定义输出行内容
+customizers:
+  - className: "feign.Client"
+    methodName: "execute"
+    descriptor: "(Lfeign/Request;Lfeign/Request$Options;)Lfeign/Response;"
+  - className: "java.sql.PreparedStatement"
+    methodName: "executeQuery"
+    rendererClass: "com.github.izerui.renderer.SampleLineRenderer"
+  - className: "java.sql.Statement"
+    methodName: "executeQuery"
+    rendererClass: "com.github.izerui.renderer.SampleLineRenderer"
+  - className: "com.mysql.cj.jdbc.ClientPreparedStatement"
+    methodName: "execute"
+  - className: "com.zaxxer.hikari.pool.HikariProxyPreparedStatement"
+    methodName: "executeQuery"
 ```
 
 以下非本工程开发可忽略
