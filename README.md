@@ -1,8 +1,9 @@
 # java-runner-feedback
 
+[![](https://jitpack.io/v/izerui/java-runner-feedback.svg)](https://jitpack.io/#izerui/java-runner-feedback)
+
 ## 功能
 java类调用过程记录Agent, 并以树状调用层次结构输出。
-[![](https://jitpack.io/v/izerui/wx-java-sdk.svg)](https://jitpack.io/#izerui/wx-java-sdk)
 效果图:
 <img src="https://github.com/izerui/java-runner-feedback/blob/main/demo.jpg?raw=true">
 
