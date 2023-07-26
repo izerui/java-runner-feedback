@@ -54,6 +54,7 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
         orMatcher = matchTypeWithSubTypeOf(orMatcher);
 
         matcher = matcher.and(orMatcher);
+        System.out.println("bytebuddy matcher: " + matcher.toString());
         return matcher;
     }
 
