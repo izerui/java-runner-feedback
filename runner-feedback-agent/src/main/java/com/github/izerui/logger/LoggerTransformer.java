@@ -41,8 +41,6 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
         }
         // 排除接口
         matcher = matcher.and(ElementMatchers.not(ElementMatchers.isInterface()));
-        // 排除包含指定注解的类
-        matcher = matchTypeWithOutAnnotation(matcher);
 
         ElementMatcher.Junction<? super TypeDescription> orMatcher = ElementMatchers.none();
         // 或包含包名
@@ -55,26 +53,6 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
 
         matcher = matcher.and(orMatcher);
         System.out.println("bytebuddy matcher: " + matcher.toString());
-        return matcher;
-    }
-
-
-    /**
-     * 匹配类型忽略指定的注解
-     *
-     * @param matcher
-     * @return
-     */
-    private ElementMatcher.Junction<? super TypeDescription> matchTypeWithOutAnnotation(ElementMatcher.Junction<? super TypeDescription> matcher) {
-        AgentProperties properties = Context.getProperties();
-        for (String annotationClassName : properties.getIgnoreAnnotations()) {
-            try {
-                Class<? extends Annotation> annotationClass = (Class<? extends Annotation>) properties.getCachedClass(annotationClassName);
-                matcher = matcher.and(ElementMatchers.not(ElementMatchers.hasAnnotation(ElementMatchers.annotationType(annotationClass))));
-            } catch (Exception ex) {
-                ;
-            }
-        }
         return matcher;
     }
 

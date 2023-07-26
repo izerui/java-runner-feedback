@@ -32,5 +32,5 @@ customizers:
     rendererClass: "com.github.izerui.renderer.SampleLineRenderer"
   - className: "com.mysql.cj.jdbc.ClientPreparedStatement"
     methodName: "execute"
-  - className: "com.zaxxer.hikari.pool.HikariProxyPreparedStatement"
-    methodName: "executeQuery"
+  - className: "org.springframework.jdbc.core.JdbcTemplate"
+    methodName: "query"
