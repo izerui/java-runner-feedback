@@ -58,7 +58,7 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
 
 
     /**
-     * 匹配指定是指定接口或者父类的子类匹配
+     * 匹配指定是指定接口或者子类匹配
      *
      * @param matcher
      * @return
