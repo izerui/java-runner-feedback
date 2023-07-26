@@ -46,10 +46,6 @@ public class AgentProperties {
      */
     private String[] ignorePackages;
     /**
-     * 忽略带指定注解的
-     */
-    private String[] ignoreAnnotations;
-    /**
      * 自定义扩展, 除了扫描指定的包下的类外，也同样扫描自定义的类，并按自定义输出到行
      */
     private Customizer[] customizers;
@@ -66,13 +62,6 @@ public class AgentProperties {
             ignorePackages = new String[0];
         }
         return ignorePackages;
-    }
-
-    public String[] getIgnoreAnnotations() {
-        if (ignoreAnnotations == null) {
-            ignoreAnnotations = new String[0];
-        }
-        return ignoreAnnotations;
     }
 
     public Customizer[] getCustomizers() {
