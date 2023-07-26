@@ -8,9 +8,6 @@ packages:
 # 忽略的包路径前缀
 ignorePackages:
   - com.github.izerui
-# 忽略的包含指定注解的类
-ignoreAnnotations:
-  - org.springframework.cloud.openfeign.FeignClient
 # 是否在树状输出中包含set方法
 showSetter: false
 # 是否在树状输出中包含get方法
