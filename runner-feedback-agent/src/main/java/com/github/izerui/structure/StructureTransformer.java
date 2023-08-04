@@ -42,7 +42,7 @@ public class StructureTransformer implements ClassFileTransformer, PremainAgent 
                 ClassReader cr = new ClassReader(classfileBuffer);
                 ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
                 ClassVisitor cv = new StructureClassVisitor(cw, realClassName);
-                cr.accept(cv, ClassReader.EXPAND_FRAMES);
+                cr.accept(cv, ClassReader.SKIP_FRAMES);
             }
         } catch (Throwable ignored) {
             ignored.printStackTrace();
