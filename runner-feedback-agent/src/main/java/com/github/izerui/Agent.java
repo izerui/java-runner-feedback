@@ -28,11 +28,11 @@ public class Agent {
         InputStream resourceAsStream = yaml.getClass().getResourceAsStream("feedback.yaml");
         if (resourceAsStream != null) {
             Context.setProperties(yaml.loadAs(resourceAsStream, AgentProperties.class));
-            AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
-        }
-        if (Context.getProperties().isEnabled()) {
-            Arrays.stream(PREMAIN_AGENTS).forEach(premainAgent -> premainAgent.premain(args, instrumentation));
-            Context.printAfterAgent();
+            if (Context.getProperties().isEnabled()) {
+                AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
+                Arrays.stream(PREMAIN_AGENTS).forEach(premainAgent -> premainAgent.premain(args, instrumentation));
+                Context.printAfterAgent();
+            }
         }
     }
 
