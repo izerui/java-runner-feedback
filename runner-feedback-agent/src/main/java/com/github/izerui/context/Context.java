@@ -4,9 +4,7 @@ import com.github.izerui.AgentProperties;
 import com.github.izerui.ansi.AnsiColor;
 import com.github.izerui.ansi.AnsiOutput;
 import org.objectweb.asm.Opcodes;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.InputStream;
 import java.util.UUID;
 
 public final class Context {
@@ -14,12 +12,15 @@ public final class Context {
     /**
      * agnet 配置文件
      */
-    private static AgentProperties properties = new AgentProperties();
+    private static final AgentProperties properties;
 
     public final static int ASM_VERSION = Opcodes.ASM9;
 
-    public static void setProperties(AgentProperties prop) {
-        properties = prop;
+
+    static {
+        YamlContext yamlContext = new YamlContext();
+        properties = yamlContext.getProperties();
+        AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
     }
 
     /**
