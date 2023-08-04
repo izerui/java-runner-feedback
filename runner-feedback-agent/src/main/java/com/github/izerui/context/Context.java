@@ -4,9 +4,9 @@ import com.github.izerui.AgentProperties;
 import com.github.izerui.ansi.AnsiColor;
 import com.github.izerui.ansi.AnsiOutput;
 import org.objectweb.asm.Opcodes;
-import org.yaml.snakeyaml.Yaml;
 
-import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Properties;
 import java.util.UUID;
 
 public final class Context {
@@ -14,18 +14,48 @@ public final class Context {
     /**
      * agnet 配置文件
      */
-    private static AgentProperties properties;
+    private static final AgentProperties properties = new AgentProperties();
 
     public final static int ASM_VERSION = Opcodes.ASM9;
 
     static {
-        Yaml yaml = new Yaml();
-        InputStream resourceAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("feedback.yaml");
-        if (resourceAsStream != null) {
-            properties = yaml.loadAs(resourceAsStream, AgentProperties.class);
-            AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
-        }
+        AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
+        properties.setEnabled(getBoolProperty("feedback.enabled", true));
+        properties.setDebugger(getBoolProperty("feedback.debugger", false));
+        properties.setIgnorePackages(getArrayProperty("feedback.ignore-packages", "com.github.izerui"));
+        properties.setOutputFormat(getStringProperty("feedback.output-format", "${success} ${time}${count} ${thread} ${package}(${file}:${line})${method}${descriptor}"));
+        properties.setPackages(getArrayProperty("feedback.packages", "com.yj2025", "com.ecworking"));
+        properties.setShowGetter(getBoolProperty("feedback.show-getter", false));
+        properties.setShowSetter(getBoolProperty("feedback.show-setter", false));
     }
+
+    private static String[] getArrayProperty(String key, String... defaultValue) {
+        Properties properties = System.getProperties();
+        Object value = properties.get(key);
+        if (value != null) {
+            return String.valueOf(value).split(",");
+        }
+        return defaultValue;
+    }
+
+    private static String getStringProperty(String key, String defaultValue) {
+        Properties properties = System.getProperties();
+        Object value = properties.get(key);
+        if (value != null) {
+            return String.valueOf(value);
+        }
+        return defaultValue;
+    }
+
+    private static boolean getBoolProperty(String key, boolean defaultBool) {
+        Properties properties = System.getProperties();
+        Object bool = properties.get(key);
+        if (bool != null) {
+            return Boolean.valueOf(String.valueOf(bool));
+        }
+        return defaultBool;
+    }
+
 
     /**
      * 获取配置
@@ -39,7 +69,12 @@ public final class Context {
     public static void printAfterAgent() {
         System.out.println("☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟");
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "插桩: runner-feedback-agent 成功!"));
-        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "配置文件: feedback.yaml"));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.packages](拦截包名,多个逗号分隔): " + Arrays.toString(properties.getPackages())));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.output-format](输出格式): " + properties.getOutputFormat()));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.debugger](是否输出调试信息): " + properties.isDebugger()));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.show-getter](是否拦截并显示get方法): " + properties.isShowGetter()));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.show-setter](是否拦截并显示set方法): " + properties.isShowSetter()));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.output-format](每行输出格式): " + properties.getOutputFormat()));
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "使用@Tracer('标记方法')就可以拦截调用链并输出树状结构!"));
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "开始愉快的玩耍吧!!!"));
         System.out.println("☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝");

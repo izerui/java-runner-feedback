@@ -50,6 +50,7 @@ public class AgentProperties {
      */
     private Customizer[] customizers;
 
+
     public String[] getPackages() {
         if (packages == null) {
             packages = new String[0];
