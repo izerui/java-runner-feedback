@@ -18,14 +18,8 @@ public final class Context {
 
     public final static int ASM_VERSION = Opcodes.ASM9;
 
-
-    static {
-        Yaml yaml = new Yaml();
-        InputStream resourceAsStream = Context.class.getResourceAsStream("feedback.yaml");
-        if (resourceAsStream != null) {
-            properties = yaml.loadAs(resourceAsStream, AgentProperties.class);
-            AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
-        }
+    public static void setProperties(AgentProperties prop) {
+        properties = prop;
     }
 
     /**
