@@ -74,7 +74,6 @@ public final class Context {
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.debugger](是否输出调试信息): " + properties.isDebugger()));
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.show-getter](是否拦截并显示get方法): " + properties.isShowGetter()));
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.show-setter](是否拦截并显示set方法): " + properties.isShowSetter()));
-        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.output-format](每行输出格式): " + properties.getOutputFormat()));
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "使用@Tracer('标记方法')就可以拦截调用链并输出树状结构!"));
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "开始愉快的玩耍吧!!!"));
         System.out.println("☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝☝");
