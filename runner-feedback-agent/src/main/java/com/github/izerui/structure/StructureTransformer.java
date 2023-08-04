@@ -45,7 +45,7 @@ public class StructureTransformer implements ClassFileTransformer, PremainAgent 
                 cr.accept(cv, ClassReader.SKIP_FRAMES);
             }
         } catch (Throwable ignored) {
-            ignored.printStackTrace();
+            ;
         }
         return null;
     }
