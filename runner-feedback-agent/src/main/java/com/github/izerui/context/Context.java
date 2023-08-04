@@ -21,7 +21,7 @@ public final class Context {
 
     static {
         Yaml yaml = new Yaml();
-        InputStream resourceAsStream = ClassLoader.getSystemResourceAsStream("feedback.yaml");
+        InputStream resourceAsStream = Context.class.getResourceAsStream("feedback.yaml");
         if (resourceAsStream != null) {
             properties = yaml.loadAs(resourceAsStream, AgentProperties.class);
             AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
