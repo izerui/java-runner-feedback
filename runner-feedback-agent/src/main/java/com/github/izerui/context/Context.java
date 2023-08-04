@@ -6,6 +6,7 @@ import com.github.izerui.ansi.AnsiOutput;
 import org.objectweb.asm.Opcodes;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.InputStream;
 import java.util.UUID;
 
 public final class Context {
@@ -13,15 +14,18 @@ public final class Context {
     /**
      * agnet 配置文件
      */
-    private static final AgentProperties properties;
+    private static AgentProperties properties = new AgentProperties();
 
     public final static int ASM_VERSION = Opcodes.ASM9;
 
 
     static {
         Yaml yaml = new Yaml();
-        properties = yaml.loadAs(ClassLoader.getSystemResourceAsStream("feedback.yaml"), AgentProperties.class);
-        AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
+        InputStream resourceAsStream = ClassLoader.getSystemResourceAsStream("feedback.yaml");
+        if (resourceAsStream != null) {
+            properties = yaml.loadAs(resourceAsStream, AgentProperties.class);
+            AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
+        }
     }
 
     /**
