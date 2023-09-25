@@ -35,46 +35,6 @@ public RespVO<PageVo<BusinessTaskVo>> findTaskList(@RequestBody BaseQueryVo vo) 
 }
 ```
 
-3. 添加配置文件 `feedback.yaml` 到类路径中
-```
-# 是否启用
-enabled: true
-# 要扫描的包路径前缀
-packages:
-  - com.yj2025
-  - com.ecworking
-  - com.github.sample
-# 忽略的包路径前缀
-ignorePackages:
-  - com.github.izerui
-# 忽略的包含指定注解的类
-ignoreAnnotations:
-  - org.springframework.cloud.openfeign.FeignClient
-# 是否在树状输出中包含set方法
-showSetter: false
-# 是否在树状输出中包含get方法
-showGetter: false
-# 是否调试状态
-debugger: false
-# 树状每行的输出格式
-outputFormat: "${success} ${time}${count} ${thread} ${package}(${file}:${line})${method}${descriptor} ${args}"
-# 除了扫描packages以外的，另外包含的接口或者类，或者接口或者类的指定方法。 格式: [class]#[method][descriptor] , 不指定method则为 * , 并可自定义输出行内容
-customizers:
-  - className: "feign.Client"
-    methodName: "execute"
-    descriptor: "(Lfeign/Request;Lfeign/Request$Options;)Lfeign/Response;"
-  - className: "java.sql.PreparedStatement"
-    methodName: "executeQuery"
-    rendererClass: "com.github.izerui.renderer.SampleLineRenderer"
-  - className: "java.sql.Statement"
-    methodName: "executeQuery"
-    rendererClass: "com.github.izerui.renderer.SampleLineRenderer"
-  - className: "com.mysql.cj.jdbc.ClientPreparedStatement"
-    methodName: "execute"
-  - className: "com.zaxxer.hikari.pool.HikariProxyPreparedStatement"
-    methodName: "executeQuery"
-```
-
 以下非本工程开发可忽略
 ====================
 本工程调试:
