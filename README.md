@@ -24,7 +24,7 @@ java类调用过程记录Agent, 并以树状调用层次结构输出。
 <dependency>
     <groupId>com.github.izerui</groupId>
     <artifactId>runner-feedback-core</artifactId>
-    <version>1.1.2</version>
+    <version>1.1.3</version>
 </dependency>
 ```
 声明要切入的入口方法:
