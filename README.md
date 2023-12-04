@@ -43,7 +43,7 @@ public RespVO<PageVo<BusinessTaskVo>> findTaskList(@RequestBody BaseQueryVo vo) 
 2. 添加 agent模块的 前置build任务`clean package`
 
 参考资料:
-bytebuddy:
+* bytebuddy:
     https://www.jianshu.com/p/672a9bdd12e1
-StackFrame:
+* StackFrame:
     https://www.baeldung.com/java-name-of-executing-method
