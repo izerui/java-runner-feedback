@@ -23,6 +23,7 @@ public final class Context {
         properties.setEnabled(getBoolProperty("feedback.enabled", true));
         properties.setDebugger(getBoolProperty("feedback.debugger", false));
         properties.setIgnorePackages(getArrayProperty("feedback.ignore-packages", "com.github.izerui"));
+        properties.setIgnoreMethods(getArrayProperty("feedback.ignore-methods", "afterExecuted"));
         properties.setOutputFormat(getStringProperty("feedback.output-format", "${success} ${time}${count} ${package}(${file}:${line})${method}${descriptor} ${thread}"));
         properties.setPackages(getArrayProperty("feedback.packages", "com.yj2025", "com.ecworking"));
         properties.setShowGetter(getBoolProperty("feedback.show-getter", false));

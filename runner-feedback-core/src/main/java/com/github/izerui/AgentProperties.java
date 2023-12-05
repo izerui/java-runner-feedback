@@ -46,6 +46,10 @@ public class AgentProperties {
      */
     private String[] ignorePackages;
     /**
+     * 忽略指定名称的方法
+     */
+    private String[] ignoreMethods;
+    /**
      * 自定义扩展, 除了扫描指定的包下的类外，也同样扫描自定义的类，并按自定义输出到行
      */
     private Customizer[] customizers;

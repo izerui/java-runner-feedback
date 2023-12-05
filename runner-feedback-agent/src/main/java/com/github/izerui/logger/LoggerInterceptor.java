@@ -33,6 +33,7 @@ public class LoggerInterceptor {
             // 被拦截的目标对象 （动态生成的目标对象）
             @This Object target,
             // 正在执行的方法Method 对象（目标对象父类的Method）
+            @SuperMethod Method superMethod,
             @Origin Method method,
             // 正在执行的方法的全部参数
             @AllArguments Object[] argumengts,

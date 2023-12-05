@@ -85,6 +85,12 @@ public class LoggerTransformer implements ClassFileTransformer, PremainAgent, Ag
                 .and(ElementMatchers.not(ElementMatchers.isClone()))
                 .and(ElementMatchers.not(ElementMatchers.isToString()))
                 .and(ElementMatchers.not(ElementMatchers.named("main")));
+        String[] ignoreMethods = Context.getProperties().getIgnoreMethods();
+        if (ignoreMethods != null) {
+            for (String ignoreMethod : ignoreMethods) {
+                matcher = matcher.and(ElementMatchers.not(ElementMatchers.named(ignoreMethod)));
+            }
+        }
         if (!Context.getProperties().isShowGetter()) {
             matcher = matcher.and(ElementMatchers.not(ElementMatchers.isGetter()));
         }
