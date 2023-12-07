@@ -22,10 +22,10 @@ public final class Context {
         AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
         properties.setEnabled(getBoolProperty("feedback.enabled", true));
         properties.setDebugger(getBoolProperty("feedback.debugger", false));
+        properties.setPackages(getArrayProperty("feedback.packages", "com.yj2025", "com.ecworking"));
         properties.setIgnorePackages(getArrayProperty("feedback.ignore-packages", "com.github.izerui"));
         properties.setIgnoreMethods(getArrayProperty("feedback.ignore-methods", "afterExecuted"));
         properties.setOutputFormat(getStringProperty("feedback.output-format", "${success} ${time}${count} ${package}(${file}:${line})${method}${descriptor} ${thread}"));
-        properties.setPackages(getArrayProperty("feedback.packages", "com.yj2025", "com.ecworking"));
         properties.setShowGetter(getBoolProperty("feedback.show-getter", false));
         properties.setShowSetter(getBoolProperty("feedback.show-setter", false));
     }
@@ -70,9 +70,12 @@ public final class Context {
     public static void printAfterAgent() {
         System.out.println("☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟☟");
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "插桩: runner-feedback-agent 成功!"));
-        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.packages](拦截包名,多个逗号分隔): " + Arrays.toString(properties.getPackages())));
-        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.output-format](输出格式): " + properties.getOutputFormat()));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.enabled](是否启用): " + Boolean.valueOf(properties.isEnabled())));
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.debugger](是否输出调试信息): " + properties.isDebugger()));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.packages](拦截的起始包名,多个逗号分隔): " + Arrays.toString(properties.getPackages())));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.ignore-packages](忽略的起始包名,多个逗号分隔): " + Arrays.toString(properties.getPackages())));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.ignore-methods](忽略的方法名,多个逗号分隔): " + Arrays.toString(properties.getPackages())));
+        System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.output-format](输出格式): " + properties.getOutputFormat()));
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.show-getter](是否拦截并显示get方法): " + properties.isShowGetter()));
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "[feedback.show-setter](是否拦截并显示set方法): " + properties.isShowSetter()));
         System.out.println(AnsiOutput.toString(AnsiColor.BRIGHT_WHITE, "使用@Tracer('标记方法')就可以拦截调用链并输出树状结构!"));
