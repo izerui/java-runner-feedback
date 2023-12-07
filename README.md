@@ -19,6 +19,15 @@ java类调用过程记录Agent, 并以树状调用层次结构输出。
 ```
 
 2. 指定切入口:
+添加仓库
+```
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+```
 添加依赖
 ```
 <dependency>
@@ -27,6 +36,8 @@ java类调用过程记录Agent, 并以树状调用层次结构输出。
     <version>1.1.5</version>
 </dependency>
 ```
+
+
 声明要切入的入口方法:
 ```
 @Tracer("切入口")
