@@ -22,16 +22,16 @@ java类调用过程记录Agent, 并以树状调用层次结构输出。
 ### 2. 配置系统属性(可选)
 您可以通过以下系统属性配置 Agent 的行为:
 
-| 属性名 | 默认值 | 说明 |
-|--------|--------|------|
-| feedback.enabled | true | 是否启用反馈功能 |
-| feedback.debugger | false | 是否输出调试信息 |
-| feedback.packages | com.hnyr | 拦截的起始包名，多个用逗号分隔 |
-| feedback.ignore-packages | com.github.izerui | 忽略的起始包名，多个用逗号分隔 |
-| feedback.ignore-methods | afterExecuted | 忽略的方法名，多个用逗号分隔 |
-| feedback.output-format | ${success} ${time}${count} ${package}(${file}:${line})${method}${descriptor} ${thread} | 输出格式 |
-| feedback.show-getter | false | 是否拦截并显示get方法 |
-| feedback.show-setter | false | 是否拦截并显示set方法 |
+| 属性名 | 默认值                                                                                   | 说明              |
+|--------|---------------------------------------------------------------------------------------|-----------------|
+| feedback.enabled | true                                                                                  | 是否启用跟踪功能        |
+| feedback.debugger | false                                                                                 | 是否输出调试信息        |
+| feedback.packages | com.example                                                                           | 拦截的起始包名，多个用逗号分隔 |
+| feedback.ignore-packages | com.github.izerui                                                                     | 忽略的起始包名，多个用逗号分隔 |
+| feedback.ignore-methods | afterExecuted                                                                         | 忽略的方法名，多个用逗号分隔  |
+| feedback.output-format | ${success} ${time}${count} ${package}(${file}:${line})${method}${descriptor} ${thread} | 输出格式            |
+| feedback.show-getter | false                                                                                 | 是否拦截并显示get方法    |
+| feedback.show-setter | false                                                                                 | 是否拦截并显示set方法    |
 
 配置示例:
 ```
