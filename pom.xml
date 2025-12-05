@@ -53,14 +53,14 @@
 
 <!--    <distributionManagement>-->
 <!--        <repository>-->
-<!--            <id>releases</id>-->
+<!--            <id>releases-pia</id>-->
 <!--            <name>Nexus Release Repository</name>-->
-<!--            <url>http://192.168.1.235:8081/nexus/content/repositories/releases/</url>-->
+<!--            <url>https://mgr.schoopia.com/nexus/repository/releases-pia/</url>-->
 <!--        </repository>-->
 <!--        <snapshotRepository>-->
-<!--            <id>snapshots</id>-->
+<!--            <id>snapshots-pia</id>-->
 <!--            <name>Nexus Snapshot Repository</name>-->
-<!--            <url>http://192.168.1.235:8081/nexus/content/repositories/snapshots/</url>-->
+<!--            <url>https://mgr.schoopia.com/nexus/repository/snapshots-pia/</url>-->
 <!--        </snapshotRepository>-->
 <!--    </distributionManagement>-->
 
